@@ -1,0 +1,163 @@
+---
+title: "Deploy your own briefing in 5 steps"
+description: "Fork the repo, configure two files, add your API keys, enable GitHub Pages, and trigger your first build. The whole process takes under an hour."
+sidebarTitle: "Quickstart"
+---
+
+Standing up your own branded briefing takes five steps. By the end you'll have a live daily pipeline running on GitHub Actions, publishing to GitHub Pages, and optionally deploying a full web app to Cloudflare Workers. The steps below assume you have a GitHub account and an Anthropic API key ready.
+
+<Note>
+  **Cost estimate:** Each pipeline run costs approximately $3.27 in Anthropic API calls, which works out to roughly $98/month at a daily cadence. The optional OpenAI embedding step adds about $0.01 per build. There is no charge for GitHub Actions on public repositories.
+</Note>
+
+<Steps>
+  <Step title="Fork the repository">
+    Go to [github.com/Common-Mechanics/ai-dossier](https://github.com/Common-Mechanics/ai-dossier) and click **Fork**. Give the fork a name that matches your publication (e.g. `climate-dossier` or `policy-brief`).
+
+    Once the fork is created, clone it locally and install dependencies:
+
+    ```bash
+    git clone https://github.com/YOUR-ORG/YOUR-REPO.git
+    cd YOUR-REPO
+    npm install
+    ```
+
+    Then set up the local environment file:
+
+    ```bash
+    cp .env.example .env
+    # Edit .env — at minimum set ANTHROPIC_API_KEY
+    ```
+
+    To confirm your local install is working, run the Next.js app:
+
+    ```bash
+    cd web && npm install && npm run dev:turbo
+    # → http://localhost:3000
+    ```
+  </Step>
+
+  <Step title="Configure tenant.yaml">
+    `config/tenant.yaml` controls everything about your publication — site name, URL, audience voice, editorial categories, tracker naming, and all page content. It is the only file you must edit to rebrand the platform.
+
+    Start from the blank template to avoid carrying over placeholder values:
+
+    ```bash
+    cp config/tenant.editorial-template.yaml config/tenant.yaml
+    ```
+
+    At minimum, fill in these fields before your first build:
+
+    ```yaml
+    site:
+      name: "YOUR PUBLICATION NAME"
+      title: "YOUR PUBLICATION NAME — Daily Briefing"
+      description: "One-line tagline for your publication."
+      url: "https://your-domain.com"
+      data_base_url: "https://your-org.github.io/your-repo"
+      publisher:
+        name: "Your Organization"
+        url: "https://your-org.com"
+
+    audience:
+      publication_name: "Your Publication"
+      description: "journalists, policymakers, and advocates"
+      publication_type: "your daily intelligence briefing"
+      topic: "your topic"
+      topic_question: "How does this affect your domain?"
+      community_label: "your community"
+      register: |
+        Describe your reader here. Who are they? What's their
+        expertise level? What should they take away?
+
+    tracker:
+      name: "Risk Index"
+      subtitle: "Domain Sentiment Index"
+      metric_positive: "positive points"
+      metric_negative: "negative points"
+      stat_label: "Balance"
+      sentiment_positive_means: "things are improving in your domain"
+      sentiment_negative_means: "things are getting worse in your domain"
+      fallback_question: "Is the situation getting better, worse, or the same?"
+    ```
+
+    After editing, run the sync script to regenerate the frontend configuration files:
+
+    ```bash
+    node scripts/sync-tenant-config.js
+    ```
+
+    Then validate the config to catch any missing or malformed fields:
+
+    ```bash
+    node scripts/validate-tenant-config.js
+    ```
+
+    See [Tenant configuration](/white-label/tenant-config) for the full field reference.
+  </Step>
+
+  <Step title="Configure sources.yaml">
+    `sources.yaml` lists every RSS feed the pipeline monitors. The default file contains 114 feeds curated for AI safety. Replace them with feeds relevant to your topic.
+
+    Each source entry looks like this:
+
+    ```yaml
+    sources:
+      - name: "Publication Name"
+        url: "https://example.com/feed.xml"
+        type: rss
+        tags: [your-topic, governance, research]
+        priority: 4   # optional, 2–5; higher = more weight in composite scoring
+    ```
+
+    Remove feeds that aren't relevant to your domain and add the key publications, think tanks, newsletters, and blogs your audience cares about. See [Sources](/white-label/sources) for the full format reference and guidance on priority weights.
+
+    After editing, validate again:
+
+    ```bash
+    node scripts/validate-tenant-config.js
+    ```
+  </Step>
+
+  <Step title="Add GitHub Secrets">
+    The daily pipeline reads your API keys from GitHub Actions secrets. In your forked repository, go to **Settings → Secrets and variables → Actions** and add the following:
+
+    | Secret | Required | Value |
+    |--------|----------|-------|
+    | `ANTHROPIC_API_KEY` | Yes | Your Anthropic API key (`sk-ant-...`) |
+    | `OPENAI_API_KEY` | Recommended | Your OpenAI API key (`sk-...`) |
+    | `CLOUDFLARE_API_TOKEN` | Cloudflare deploy only | Cloudflare API token with Workers edit permissions |
+    | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare deploy only | Your Cloudflare account ID |
+
+    <Warning>
+      Without `ANTHROPIC_API_KEY`, the pipeline cannot run. Without `OPENAI_API_KEY`, embedding-based deduplication and event matching are disabled — the pipeline still works but may include more duplicate stories.
+    </Warning>
+
+    Commit and push your updated `config/tenant.yaml` and `sources.yaml` to `main`:
+
+    ```bash
+    git add config/tenant.yaml sources.yaml
+    git commit -m "chore: configure tenant for initial deployment"
+    git push
+    ```
+  </Step>
+
+  <Step title="Enable GitHub Pages and trigger the first build">
+    In your repository, go to **Settings → Pages** and set the source to **GitHub Actions**. This tells GitHub to serve the static output that the pipeline deploys.
+
+    To trigger your first build without waiting for the 8:10 AM cron:
+
+    1. Go to **Actions** in your repository
+    2. Click **Daily AI Dossier** in the left sidebar
+    3. Click **Run workflow**
+    4. Leave the inputs at their defaults and click **Run workflow**
+
+    The build takes 10–20 minutes. When it completes, your briefing will be live at `https://YOUR-ORG.github.io/YOUR-REPO`.
+
+    <Tip>
+      On manual re-runs you can pass optional inputs: `date` (e.g. `2026-03-15`) to build for a specific past date, `cutoff_hours` to extend the RSS lookback window, or `resume` with a build ID to continue a failed build from its last checkpoint.
+    </Tip>
+
+    If you're deploying the full Next.js web app to Cloudflare Workers, see [Deployment](/white-label/deployment) for the additional steps.
+  </Step>
+</Steps>

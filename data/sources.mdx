@@ -1,0 +1,101 @@
+---
+title: "News sources and feed coverage"
+description: "Aisafety monitors 114 RSS feeds across 9 source categories — from alignment labs to major wire services. See what's covered and how sources are weighted."
+sidebarTitle: "Sources"
+---
+
+Every daily briefing is built from 114 RSS feeds monitored continuously across nine categories. Sources range from specialist AI safety research blogs and think-tank policy feeds to major wire services and podcasts. The pipeline fetches all feeds within a 28-hour window each morning, filters for relevance, and runs the result through an editorial scoring process before anything reaches the briefing.
+
+Each source carries a **priority weight** between 2 and 5. Higher-weight sources contribute more to a story's composite score — so a paper from the Alignment Forum on a given topic will rank higher than a passing mention of the same topic in a general-interest outlet. Weights reflect editorial judgment about how signal-dense each source typically is for the AI safety beat.
+
+<Note>
+  The source list is maintained by the Common Mechanics editorial team. Sources are added, removed, and re-weighted over time as the coverage landscape shifts. If you notice a significant source missing, you can reach out via the [About page](https://aisafety.fyi/about).
+</Note>
+
+## Sources by category
+
+<AccordionGroup>
+  <Accordion title="AI Safety & Alignment">
+    The highest-priority category, covering foundational safety research, alignment techniques, interpretability work, and existential risk analysis. Includes outputs from the major safety labs and independent researchers.
+
+    **Notable sources:** Alignment Forum, LessWrong, MIRI, ARC (Alignment Research Center), Redwood Research, METR, DeepMind Safety, CAIS Newsletter, ML Safety Newsletter, AI Impacts, Transformer Circuits, EA Forum, 80,000 Hours, Cold Takes (Holden Karnofsky), Victoria Krakovna, Jacob Steinhardt, Gwern, Planned Obsolescence, Forethought, AI Futures Project (Daniel Kokotajlo)
+
+    **Priority weight:** 5
+  </Accordion>
+
+  <Accordion title="Policy & Governance">
+    Tracks legislation, regulation, international agreements, and institutional AI policy across the US, EU, UK, China, and the Global South. Includes think tanks, standards bodies, and civil society organisations.
+
+    **Notable sources:** GovAI Blog, CSET Georgetown, Future of Life Institute, RAND, Ada Lovelace Institute, AI Now Institute, EFF, Lawfare, TechPolicy.Press, Euractiv, Foundation for American Innovation, Partnership on AI, AlgorithmWatch, Council on Foreign Relations, Institute for Progress, War on the Rocks, R Street Institute
+
+    **Priority weight:** 5
+  </Accordion>
+
+  <Accordion title="Biosecurity">
+    Covers AI-enabled biological risks, pandemic preparedness, dual-use biology research, and the intersection of AI capabilities with biosecurity concerns.
+
+    **Notable sources:** SecureBio, NTI (Nuclear Threat Initiative), Council on Strategic Risks, CIDRAP, IBBIS, Global Biodefense, SIPRI, STAT News, Nature Biotechnology, Science News
+
+    **Priority weight:** 4
+  </Accordion>
+
+  <Accordion title="Research & Capabilities">
+    Covers frontier model developments, benchmark results, scaling research, and technical ML advances from academic labs and research blogs. arXiv cs.AI papers are filtered through a keyword list to surface only safety-relevant preprints.
+
+    **Notable sources:** arXiv cs.AI (filtered), MIT Technology Review, Epoch AI Blog, Hugging Face Blog, BAIR Blog, The Gradient, Import AI (Jack Clark), Understanding AI (Timothy B. Lee), Interconnects (Nathan Lambert), Nature
+
+    **Priority weight:** 3–4
+  </Accordion>
+
+  <Accordion title="Industry">
+    Tracks corporate strategy, product launches, startup funding, acquisitions, and market dynamics across the AI ecosystem, with attention to how business moves affect the safety landscape.
+
+    **Notable sources:** TechCrunch AI, The Verge AI, Ars Technica, 404 Media, Hacker News, Platformer (Casey Newton), Semafor, Rest of World, The Register
+
+    **Priority weight:** 2–3
+  </Accordion>
+
+  <Accordion title="Major News">
+    Wire services and major outlets for context on mainstream AI coverage and policy stories that break in general media before reaching specialist sources.
+
+    **Notable sources:** Reuters Technology, Bloomberg Technology, The Washington Post, The Atlantic, The New Yorker, Axios AI+, NPR, CNBC Technology, Fortune, TIME, South China Morning Post, Al Jazeera
+
+    **Priority weight:** 2–3
+  </Accordion>
+
+  <Accordion title="Newsletters">
+    Independent commentary, analysis newsletters, and Substack writers who cover AI safety and governance from a variety of perspectives — including critical and contrarian voices.
+
+    **Notable sources:** Don't Worry About the Vase (Zvi Mowshowitz), Astral Codex Ten (Scott Alexander), ChinAI (Jeffrey Ding), ChinaTalk (Jordan Schneider), Rising Tide (Helen Toner), Transformer (Shakeel Hashim), AI Policy Weekly (CAIP), AIWI (AI Whistleblower Initiative), Pantheon Insights, AI as Normal Technology (Narayanan & Kapoor)
+
+    **Priority weight:** 3–4
+  </Accordion>
+
+  <Accordion title="Podcasts">
+    Long-form audio conversations and interviews that occasionally break news or carry extended analysis worth surfacing in the briefing.
+
+    **Notable sources:** Hard Fork (NYT), Decoder (The Verge), Pivot (Vox Media), The Ezra Klein Show (NYT), Odd Lots (Bloomberg), AXRP (AI X-risk Research Podcast), Dwarkesh Podcast, Epoch AI After Hours
+
+    **Priority weight:** 2–3
+  </Accordion>
+
+  <Accordion title="Video & Media">
+    YouTube channels and video feeds covering AI safety education, notable interviews, and cultural moments in the AI space.
+
+    **Notable sources:** Robert Miles AI, AI in Context (80,000 Hours), Dwarkesh Podcast (YouTube), The Diary of a CEO (AI episodes only)
+
+    **Priority weight:** 2
+  </Accordion>
+</AccordionGroup>
+
+## How priority weights work
+
+Priority weight feeds into each story's **composite score**, which determines whether a story becomes a lead, a ticker item, or is filtered out entirely:
+
+```
+composite_score = (topic_importance × 0.4) + (article_importance × 0.6)
+```
+
+Topic importance is influenced by the source's priority weight — a story from a weight-5 source starts with a higher baseline than the same story from a weight-2 source. Stories from key organisations (Anthropic, OpenAI, METR, GovAI, MIRI, and others) also receive a score bonus on top of source weight.
+
+This means the briefing reflects both the importance of the underlying event *and* the significance of who is reporting it — a distinction that matters when the same news is covered by both a specialist safety researcher and a general-interest wire service.

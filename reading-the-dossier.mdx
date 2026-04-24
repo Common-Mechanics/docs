@@ -1,0 +1,154 @@
+---
+title: "Reading the daily dossier"
+description: "A guide to every section, score, label, and field in the Aisafety daily briefing — so you know exactly what you're looking at and why it matters."
+sidebarTitle: "Reading the dossier"
+---
+
+The Aisafety daily briefing is a structured document, not a free-form newsletter. Every item you see — every number, badge, and label — was produced by a deliberate editorial process and means something specific. This page walks you through each part so you can read the dossier fluently from day one.
+
+## The three sections of the briefing
+
+Each edition of the dossier is divided into three sections:
+
+**Lead stories** are the top 1–3 items of the day, selected for their highest combined intensity and importance. They get full editorial treatment: a headline, a complete briefing summary, a sentiment rating, an intensity score, and a quip. If something is a lead, the pipeline judged it genuinely significant — not just interesting.
+
+**Ticker items** are secondary stories that made the cut but didn't reach lead status. They have all the same scoring metadata as leads — category, sentiment, intensity, composite score, tags — but no extended briefing text. The ticker is where you find the day's full breadth of coverage.
+
+**Spotlight** is a single non-text item: a podcast episode, video, demo, or interactive tool that the Spotlight editor flagged as worth your attention. It might be thought-provoking, genuinely entertaining, or simply the best piece of AI safety media published that day.
+
+<Tabs>
+  <Tab title="Lead story">
+    A lead story receives the full editorial treatment. Here is what each field means:
+
+    **One-liner** (max 130 characters): A single sentence that captures what happened and why it matters. Written for skimming — if you read nothing else, read this.
+
+    **Briefing** (max 500 characters): A complete editorial summary of the story. Written in flowing prose (never bullet points), it gives you the context, the significance, and the "so what" in the space of a paragraph. Only lead stories have a briefing.
+
+    **Quip**: A short editorial observation — wit, context, or a sharper angle on the story. Quips are written with a light touch; they're not jokes, but they're not entirely neutral either.
+
+    **Category**: The editorial domain this story belongs to — Safety, Policy, Models, Industry, or Security.
+
+    **Tags**: 1–4 fine-grained classification labels (e.g. `alignment`, `evals`, `governance`, `military-ai`). Use these to filter stories by sub-topic.
+
+    **Sentiment**: Whether this development is `positive`, `negative`, or `neutral` for AI safety — specifically, whether it makes catastrophic AI risk more or less likely. A positive story is one where something good happened for safety; a negative story is one where something bad did. Sentiment follows strict editorial rules, not gut feel.
+
+    **Intensity** (0–3): How much this story moves the needle on P(Doom). An intensity of 3 means the pipeline judged this story as directly and significantly affecting AI risk. An intensity of 0 means it's relevant context but has no clear directional impact. Leads are typically intensity 2–3.
+
+    **Composite score** (1–10): The overall importance of the story, independent of its P(Doom) direction. A composite score of 8.8 means the story is field-shaping; a 5.5 means it's relevant but not exceptional. This score combines topic weight (how important is this subject area?) and article weight (how much new information does this piece add?), with new information counting for more.
+
+    **Priority**: A human-readable tier derived from the composite score — `critical`, `high`, `medium`, or `low`.
+  </Tab>
+  <Tab title="Ticker item">
+    Ticker items share all the same scoring metadata as leads — category, tags, sentiment, intensity, composite score, priority, and a one-liner — but they do not have a briefing or a quip.
+
+    The ticker is ordered by intensity descending, with composite score as tiebreaker. The first ticker items are often stories that nearly made the lead cut; items further down are more peripheral but still within the day's coverage.
+
+    You can filter the ticker by category using the filter bar on the daily page. If you only care about Policy, you can hide everything else and scan just those items.
+
+    <Tip>
+      A ticker item with `lead_candidate: true` was seriously considered for a lead position but was demoted — usually because three stronger stories pushed it down. These are worth reading if you have time.
+    </Tip>
+  </Tab>
+</Tabs>
+
+## Scores and ratings explained
+
+### Sentiment
+
+Sentiment reflects the directional impact on AI safety — not whether the news is good or bad in a general sense, but whether it makes catastrophic risk more or less likely.
+
+| Sentiment | What it means |
+|---|---|
+| **Positive** | This development decreases P(Doom) — good for AI safety |
+| **Negative** | This development increases P(Doom) — bad for AI safety |
+| **Neutral** | No clear directional impact on catastrophic risk |
+
+Sentiment follows documented editorial rules. For example: a paper that discovers and publishes a new vulnerability is rated positive (disclosure improves the field), not negative. A lab that accelerates its timeline under competitive pressure is rated negative (racing dynamics are bad for safety). The rules exist to keep ratings consistent day to day.
+
+### Intensity (0–3)
+
+Intensity is the P(Doom) weight of a story — how much it moves the needle on AI risk. It is directly tied to how a story contributes to the P(Doom) Tracker.
+
+| Intensity | Meaning |
+|---|---|
+| **3** | High — significant directional impact on AI safety |
+| **2** | Moderate — meaningful but not pivotal |
+| **1** | Low — relevant but limited direct impact |
+| **0** | Neutral — no clear P(Doom) direction |
+
+A story with intensity 3 contributes 3 doom points or 3 bloom points to the day's tracker tally. A story with intensity 0 contributes nothing, even if it has a high composite score.
+
+### Composite score (1–10)
+
+The composite score measures overall editorial importance, independent of P(Doom) direction. It combines two factors:
+
+- **Topic importance** (40%): How significant is the underlying subject for AI safety?
+- **Article importance** (60%): How much new, actionable information does this specific piece add?
+
+New information outweighs topic gravity. A first-mover scoop on a moderate topic scores higher than stale commentary on a landmark one.
+
+| Score range | Tier |
+|---|---|
+| 9.0–9.5 | Paradigm shifts |
+| 8.0–8.9 | Field-shaping events |
+| 6.5–7.9 | Important developments |
+| 5.0–6.4 | Relevant news |
+| 3.0–4.9 | Background signal |
+
+### Priority
+
+Priority is a human-readable tier label derived from the composite score:
+
+- **Critical** — paradigm-shift territory
+- **High** — field-shaping
+- **Medium** — important but not exceptional
+- **Low** — relevant context
+
+## Category tags
+
+Every item belongs to one of five editorial categories:
+
+| Category | What it covers |
+|---|---|
+| **Safety** | Alignment, interpretability, evaluations, existential risk |
+| **Policy** | Governance, regulation, international agreements, think tank research |
+| **Models** | Frontier model releases, capability developments, benchmarks |
+| **Industry** | Corporate strategy, funding, acquisitions, developer ecosystem |
+| **Security** | Military AI, cybersecurity, biosecurity, surveillance, dual-use risks |
+
+Beyond the main category, each item carries 1–4 fine-grained tags drawn from a fixed taxonomy — labels like `alignment`, `evals`, `governance`, `frontier-models`, `military-ai`, `open-source`, `biosecurity`, and more. These let you filter and search across the archive with precision.
+
+## A complete dossier item
+
+Here is what a fully annotated lead story looks like in the underlying data. Every field you see in the UI maps to a field here:
+
+```jsonc
+{
+  "title": "Pentagon AI Targeting, Anthropic Blacklist, Steering Awareness",
+  "source": "MIT Technology Review",
+  "url": "https://...",
+  "composite_score": 8.8,       // 1-10 overall importance
+  "category": "security",        // safety | policy | models | industry | security
+  "tags": ["military-ai"],       // 1-4 fine-grained classification labels
+  "one_liner": "...",            // max 130 chars — the skim-readable summary
+  "briefing": "...",             // max 500 chars — leads only, full editorial prose
+  "priority": "high",            // critical | high | medium | low
+  "sentiment": "negative",       // positive | negative | neutral
+  "sentiment_rationale": "...",  // explanation when sentiment deviates from default rule
+  "intensity": 3,                // 0-3 — P(Doom) severity, feeds the tracker
+  "quip": "...",                 // editorial wit or sharper angle on the story
+  "lead_candidate": true         // true if this was considered for lead but demoted
+}
+```
+
+<Note>
+  Ticker items use the same schema but omit the `briefing` field. The Spotlight item (the `lol` field in the raw data) also uses a simplified version of this schema.
+</Note>
+
+## The P(Doom) Tracker
+
+Every story's intensity and sentiment feed into the [P(Doom) Tracker](/features/pdoom-tracker) — a running index of whether the AI safety landscape is improving or deteriorating over time. Negative-sentiment stories earn doom points; positive-sentiment stories earn bloom points. The tracker chart stacks these daily so you can see trends at a glance.
+
+<Tip>
+  The P(Doom) Tracker is in open beta. The calibration is being refined based on real-world data. If a rating seems wrong to you, the [About page](https://aisafety.fyi/about) explains the methodology and welcomes feedback.
+</Tip>

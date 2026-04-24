@@ -1,0 +1,81 @@
+---
+title: "How Aisafety works"
+description: "Aisafety reads 114 RSS feeds every morning, runs them through a multi-stage AI editorial pipeline, and publishes a ranked daily briefing by 8:10 AM Berlin time."
+---
+
+Every morning, an automated pipeline wakes up and reads the AI safety internet so you don't have to. It pulls from 114 curated sources — research labs, think tanks, policy institutes, newsletters, podcasts, and media channels — runs them through a process modelled on how a real editorial newsroom operates, and publishes a ranked, scored briefing. The whole process completes daily at 8:10 AM Berlin time, and the briefing is live before most of Europe finishes breakfast.
+
+Here is what happens between "raw RSS feeds" and the briefing you read.
+
+## The pipeline, step by step
+
+<Steps>
+  <Step title="Gather and filter">
+    The pipeline fetches all 114 RSS feeds, looking back 28 hours to catch late-breaking stories from the previous day. It immediately discards job postings, weekly roundups, and off-topic academic papers. For high-volume sources like arXiv (which publishes around 300 computer-science papers a day), only items that match a curated set of safety-relevant keywords pass through — bringing ~300 papers down to 15–30 relevant ones.
+
+    Before any editorial judgment happens, all item titles are compared using semantic similarity. If six outlets are all covering the same press release, only the most authoritative source makes it through. This deduplication runs before the editorial pipeline so editors aren't wasting time on identical stories.
+  </Step>
+  <Step title="Classify novelty">
+    Each item that passes triage gets a novelty classification: is this **Breaking** (genuinely new information), **Continuation** (a follow-up to something already known), or **Commentary** (an opinion or interpretation of known facts)? This classification matters because it sets a ceiling on how prominently a story can appear. Commentary on a major event can never score as high as a genuine scoop — even if the headline is dramatic. This is the core mechanism that keeps the briefing grounded.
+  </Step>
+  <Step title="Six domain editors review in parallel">
+    Six specialist editors review the filtered, classified items simultaneously — each focused on their domain. A Safety editor looks for alignment research, interpretability papers, and evaluation results. A Policy editor watches for regulation, governance, and geopolitics. A Models editor tracks capability developments and new releases. An Industry editor follows corporate moves, funding, and acquisitions. A Security editor covers military AI, biosecurity, and dual-use concerns. A Spotlight editor finds notable podcasts, videos, and media worth surfacing.
+
+    Each editor scores items within their domain, flags cross-domain relevance, and writes up their assessment. They share a common understanding of what matters but apply their own specialist lens.
+  </Step>
+  <Step title="Chief Editor ranks and selects">
+    A Chief Editor reads all six domain reviews, resolves disagreements, detects cross-domain signals (a story that matters to both the Safety and Policy editors gets a relevance bonus), and produces the final ranked selection: which stories become leads, which become ticker items, and what the overall shape of the day looks like. Stories from key organisations in the AI safety field receive an additional scoring bonus.
+
+    If the Chief Editor is unavailable, a Deputy steps in with the same brief and the same editorial mandate. All decisions are fully traceable.
+  </Step>
+  <Step title="Research and community pulse">
+    For the top candidates, the pipeline fetches the full article text to give the writing phase richer context. Simultaneously, it checks what the AI safety community is actually discussing — posts from Bluesky, LessWrong, and the Alignment Forum are synthesised into themes, mood, and notable reactions. This community pulse adds texture to the briefing without letting social media chatter override editorial judgment.
+  </Step>
+  <Step title="Write the briefing">
+    With ranked stories and research notes in hand, the pipeline writes the complete dossier: the headline, executive summary, lead briefings, one-liners, sentiment ratings, intensity scores, quips, and tags. Everything is written to strict character limits — one-liners capped at 130 characters, lead briefings at 500 — to keep the briefing tight and readable.
+
+    A mechanical enforcement step then validates the output: stories can only appear where they were genuinely selected, scores are clamped according to novelty class, and no raw academic paper can appear as a lead story regardless of its subject matter.
+  </Step>
+  <Step title="Quality check and publish">
+    A final deduplication pass compares today's stories against the last 30 editions to catch near-duplicate coverage across days. Lead count is capped at three. Then the briefing is published to [aisafety.fyi](https://aisafety.fyi) — and, a short while later, an audio episode is generated so you can listen instead of read.
+  </Step>
+</Steps>
+
+## What the pipeline covers
+
+The five editorial categories reflect the domains that matter for AI safety:
+
+| Category | What it covers |
+|---|---|
+| **Safety** | Alignment research, interpretability, evaluations, existential risk |
+| **Policy** | Governance, regulation, international agreements, standards |
+| **Models** | Frontier models, capability developments, new releases, benchmarks |
+| **Industry** | Corporate strategy, funding, acquisitions, developer ecosystem |
+| **Security** | Military AI, cybersecurity, biosecurity, surveillance, dual-use risks |
+
+<Info>
+  Every dossier item is tagged with one of these categories plus 1–4 fine-grained tags (like `alignment`, `evals`, `governance`, or `military-ai`) so you can filter the briefing to what matters most to you.
+</Info>
+
+## Frequently asked questions
+
+<AccordionGroup>
+  <Accordion title="How do I know the pipeline isn't just amplifying AI hype?">
+    The novelty classification system is the primary guard against this. Commentary and opinion pieces — even on important topics — are capped at lower scores and cannot become lead stories. Stories from high-priority sources (research labs, think tanks, peer-reviewed outlets) receive higher weighting than general media. And the scoring rubric explicitly distinguishes "topic importance" from "article importance" — a dramatic headline on a stale follow-up scores lower than a quieter first-mover scoop.
+  </Accordion>
+  <Accordion title="How are sources chosen?">
+    The 114 sources were selected to cover the AI safety landscape with depth and breadth: research labs (Anthropic, DeepMind, OpenAI, Redwood Research), safety-focused organisations (MIRI, ARC, METR, CAIS, GovAI), policy institutes (CSET Georgetown, RAND, Brookings), independent newsletters, academic feeds, and general-interest media that regularly covers AI. The list is actively maintained — sources that consistently produce low-relevance content are reviewed.
+  </Accordion>
+  <Accordion title="Is any human involved in the editorial process?">
+    The daily output is fully automated — no human writes or edits the briefing itself. However, a human is always in the loop at the system level: the editorial rules, scoring calibration, sentiment guidelines, and source list are regularly reviewed and refined by hand to catch blind spots, reduce bias, and improve accuracy over time. Post-mortem analysis runs automatically after each build and surfaces quality issues for human review.
+  </Accordion>
+  <Accordion title="What time does the briefing publish?">
+    The pipeline runs daily at 8:10 AM Berlin time (CET/CEST — the schedule is DST-proof). The text briefing is typically live within an hour of the pipeline starting. The audio episode follows shortly after.
+  </Accordion>
+  <Accordion title="What happens when the pipeline encounters a bad day — overloaded APIs, missing feeds?">
+    The pipeline has multiple layers of resilience. If the Chief Editor is unavailable, a Deputy steps in. If a critical writing phase fails a quality check, it retries surgically rather than rebuilding from scratch. If an API is overloaded, the pipeline retries with exponential backoff. Every build produces a complete audit trail — including all editorial deliberations — so any failure can be diagnosed and recovered from.
+  </Accordion>
+  <Accordion title="Can I access the raw data behind the briefing?">
+    Yes. The briefing is available as an [RSS feed](/data/rss-feed) and as a [machine-readable plain-text endpoint](/data/llm-access) designed for piping into AI workflows. The archive at [aisafety.fyi/archive](https://aisafety.fyi/archive) covers every past edition.
+  </Accordion>
+</AccordionGroup>

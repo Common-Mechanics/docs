@@ -1,0 +1,66 @@
+---
+title: "Event Timeline: Tracking AI Safety Stories Over Time"
+description: "The timeline tracks how individual AI safety stories evolve across multiple days — following each arc from first mention through new developments to resolution."
+sidebarTitle: "Timeline"
+---
+
+Most AI safety news doesn't resolve in a single day. A regulatory inquiry, a lab safety controversy, or a new capability that raises concerns will generate new coverage over days or weeks. The timeline feature is designed for exactly this: it groups related stories into ongoing arcs so you can follow a thread from its beginning, see how it developed, and understand where it stands today.
+
+## How arcs are structured
+
+The timeline organises coverage into a three-level hierarchy:
+
+<CardGroup cols={3}>
+  <Card title="Event (Arc)" icon="bookmark">
+    The top-level story thread — also called a saga. An arc is a named, evolving situation: for example, "Anthropic model welfare concerns" or "EU AI Act implementation." Arcs have living headlines that update as new developments emerge.
+  </Card>
+  <Card title="Turn" icon="arrow-right">
+    A distinct development within an arc — a meaningful new piece of information that advances the story. A single arc may accumulate many turns over weeks or months.
+  </Card>
+  <Card title="Story" icon="file-text">
+    An individual source article. Each story is matched to a turn, giving you a direct link to the original reporting behind every development.
+  </Card>
+</CardGroup>
+
+## Browsing the timeline
+
+Visit `/timeline` to see all active arcs. Each arc is displayed as a card showing:
+
+- The current living headline
+- The date the arc first appeared
+- The number of turns (developments) recorded so far
+- The most recent turn date
+- The editorial category (Safety, Policy, Models, Industry, or Security)
+
+Arcs are sorted by recency of their latest development, so the most actively evolving stories appear first.
+
+## Arc detail pages
+
+Click any arc to open its full detail page. On this page you can:
+
+- Read the arc's full introductory summary
+- Browse every turn in chronological order, with the prose description of what changed
+- Click through to the source articles behind each turn
+- See background stories: related articles that informed the arc without becoming a primary turn
+
+Arc URLs follow the format `/timeline/[title-MMDDYY]` — for example, `/timeline/anthropic-model-welfare-040126`. These URLs are stable and shareable.
+
+## Living headlines
+
+An arc's headline is not fixed at creation. As new turns are recorded, the headline is updated to reflect the current state of the story — a SITREP (situation report) rather than a historical title. This means bookmarking an arc page will always show you its current status.
+
+<Note>
+  Arcs that have been manually titled by an editor will never have their headline automatically overridden. The `headline_source` field distinguishes auto-generated headlines from editorially chosen ones.
+</Note>
+
+## Background stories
+
+Not every article that touches an arc warrants its own turn. Stories that provide context, repeat known facts, or were assessed as low-novelty are recorded as background sources — visible on the arc detail page but not promoted to turn level. This keeps the turn list focused on genuine new developments.
+
+<Tip>
+  If you want to understand the full reporting volume behind a major story, the background sources section on the arc detail page shows the complete set of articles that were considered, including those that didn't generate a new development.
+</Tip>
+
+## Story-to-arc matching
+
+Stories from each day's briefing — including stories that were rejected from the published dossier — are automatically matched to their relevant arc. This means the timeline is richer than the published briefing: it captures the full reporting landscape around each story, not just what made the lead or ticker positions.

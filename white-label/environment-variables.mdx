@@ -1,0 +1,120 @@
+---
+title: "Environment variables reference"
+description: "All environment variables for the pipeline and web app, plus pipeline CLI flags for cost control, date overrides, and checkpoint resume."
+sidebarTitle: "Environment variables"
+---
+
+The platform uses a small set of environment variables. For local development, copy `.env.example` to `.env` and fill in the values you need. For production, add them as GitHub Actions secrets under **Settings → Secrets and variables → Actions** — the daily pipeline workflow and the Cloudflare deploy workflow read from there automatically.
+
+```bash
+# Set up local environment
+cp .env.example .env
+# Edit .env — at minimum set ANTHROPIC_API_KEY
+```
+
+## Pipeline variables
+
+These variables are read by `scripts/build-dossier.js` and the other pipeline scripts. Add them as GitHub Actions secrets for production builds.
+
+<ParamField body="ANTHROPIC_API_KEY" type="string" required>
+  Your Anthropic API key. Required — the entire pipeline (triage, SME editors, chief editor, produce, post-mortem) runs on Claude models. Without this key, no build can start.
+
+  Format: `sk-ant-...`
+</ParamField>
+
+<ParamField body="OPENAI_API_KEY" type="string">
+  Your OpenAI API key. Optional but strongly recommended. Enables:
+
+  - Embedding-based RSS deduplication (Phase 0) — clusters semantically similar items before triage, removing duplicate coverage of the same event from multiple outlets.
+  - Embedding-based event matching — matches today's stories to existing events in the timeline using vector similarity.
+  - Dedup QA hints — supplements Haiku's cross-day deduplication check with embedding similarity scores.
+
+  Without this key, the pipeline falls back gracefully — deduplication relies on URL matching only, and event matching uses Sonnet without embedding pre-filtering. Expect slightly more duplicate stories and weaker event continuity. Cost: approximately $0.01 per build.
+
+  Format: `sk-...`
+</ParamField>
+
+<ParamField body="SLACK_WEBHOOK_URL" type="string">
+  Slack Incoming Webhook URL. Optional. When set, the pipeline posts alerts to your Slack channel for: pipeline failures, cost cap hits, circuit breaker trips, chronic source failures, and podcast generation failures.
+
+  Leave unset for silent operation — PostHog events and local JSONL logs still capture all events.
+
+  To set up: Slack → Apps → your app → Incoming Webhooks → Add New Webhook to Workspace.
+</ParamField>
+
+## Web app variables
+
+These variables are used by the Next.js web app. For local development, add them to `web/.env.local`. For Cloudflare Workers deployment, they are passed as Wrangler secrets or set via the Cloudflare dashboard.
+
+<ParamField body="NEXT_PUBLIC_SENTRY_DSN" type="string">
+  Sentry Data Source Name for error tracking. Optional. When set, Sentry captures unhandled exceptions and performance traces across the client, server, and edge runtimes.
+
+  Add this as a GitHub Actions secret named `NEXT_PUBLIC_SENTRY_DSN`. The ship workflow passes it to the Cloudflare deploy step automatically.
+
+  Format: `https://...@sentry.io/...`
+</ParamField>
+
+## Deployment variables
+
+These variables are only needed when deploying the Next.js web app to Cloudflare Workers. Add them as GitHub Actions secrets.
+
+<ParamField body="CLOUDFLARE_API_TOKEN" type="string">
+  Cloudflare API token with `Workers Scripts:Edit` permission on your account. Required for the ship workflow to deploy your Worker.
+
+  Create at: **Cloudflare Dashboard → My Profile → API Tokens → Create Token → Edit Cloudflare Workers** template.
+</ParamField>
+
+<ParamField body="CLOUDFLARE_ACCOUNT_ID" type="string">
+  Your Cloudflare account ID. Found in the Cloudflare dashboard sidebar under your account name.
+</ParamField>
+
+## Pipeline CLI flags
+
+These are not environment variables — they are command-line arguments passed to `npm run build`. Use them when triggering manual builds locally or via the GitHub Actions workflow dispatch.
+
+<ParamField body="--max-cost" type="number" default="5">
+  Abort the pipeline if cumulative Anthropic API costs exceed this amount in US dollars. Protects against runaway builds caused by retry loops or unexpectedly large inputs.
+
+  ```bash
+  npm run build -- --max-cost=5
+  ```
+</ParamField>
+
+<ParamField body="--resume" type="string">
+  Resume a failed or interrupted build from its last saved checkpoint rather than starting over. Pass the build ID from the failed run's logs (format: `YYYY-MM-DD_HHmmss_HASH`).
+
+  ```bash
+  npm run build -- --resume=2026-03-20_143745_56d7b282
+  ```
+
+  Useful when a build fails in a late phase (produce, QA, event matching) after the expensive earlier phases have already completed. Saves the cost of re-running triage, SME reviews, and chief editor.
+</ParamField>
+
+<ParamField body="--date" type="string">
+  Build for a specific past date instead of today. Format: `YYYY-MM-DD`. The pipeline fetches RSS items from that date's 28-hour window rather than the current window.
+
+  ```bash
+  npm run build -- --date=2026-03-15
+  ```
+
+  Useful for backfilling missing dates or rebuilding a day with updated editorial rules.
+</ParamField>
+
+## Cost reference
+
+Running the platform at daily cadence costs approximately $98/month in API fees. The table below shows the per-phase cost breakdown for a typical build:
+
+| Phase | Model | Approximate cost |
+|-------|-------|-----------------|
+| SME editors (×5 parallel) | Claude Sonnet (with prompt caching) | ~$1.20 |
+| Chief editor | Claude Opus | ~$1.00 |
+| Produce (with extended thinking) | Claude Sonnet | ~$0.60 |
+| Score rejected materials | Claude Sonnet | ~$0.15 |
+| Triage + dedup QA | Claude Haiku | ~$0.10 |
+| Post-mortem | Claude Opus (with extended thinking) | ~$0.20 |
+| Embeddings (OpenAI) | text-embedding-3-small | ~$0.01 |
+| **Total** | | **~$3.27** |
+
+<Note>
+  The chief editor uses Claude Opus by default, which accounts for approximately $1.00 of the per-build cost. During initial setup and testing, you can reduce costs by triggering fewer builds manually or using the `--max-cost` flag to keep individual runs within budget.
+</Note>

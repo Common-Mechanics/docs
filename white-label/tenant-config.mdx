@@ -1,0 +1,260 @@
+---
+title: "Configuring your tenant (tenant.yaml)"
+description: "Complete reference for config/tenant.yaml — the single file that controls your publication's identity, voice, categories, tracker, and all page content."
+sidebarTitle: "Tenant config"
+---
+
+`config/tenant.yaml` is the single source of truth for your entire publication. It controls what the pipeline calls your topic, how the AI writes for your audience, what editorial categories structure the briefing, what your sentiment tracker is called, and what text appears on your about and privacy pages. Every LLM prompt in the pipeline reads values from this file at runtime; the frontend reads it through auto-generated TypeScript files.
+
+<Warning>
+  After editing `config/tenant.yaml`, you must run `node scripts/sync-tenant-config.js` to regenerate the frontend configuration files (`site.ts`, `content.ts`, `categories.ts`, `tracker-info.ts`, `sources.ts`). Changes to the YAML file alone will not appear in the web app until you sync. The build command (`npm run build` inside `web/`) runs the sync automatically, but for local development you should run it manually.
+</Warning>
+
+## Site identity
+
+The `site` section sets your publication's public identity — the name, URL, tagline, and publisher credit that appear in the header, metadata, and JSON-LD structured data.
+
+```yaml
+site:
+  name: "AISAFETY.FYI"
+  title: "AISAFETY.FYI — Daily AI Safety Briefing"
+  description: "Your daily brief to stay aligned. AI safety, governance, and emerging tech — curated every morning."
+  url: "https://aisafety.fyi"
+  data_base_url: "https://common-mechanics.github.io/ai-dossier"
+  publisher:
+    name: "Common Mechanics"
+    url: "https://commonmechanics.io"
+  og_image: "/og.png"
+```
+
+| Field | Description |
+|-------|-------------|
+| `name` | Short publication name. Used in the site header and page titles. |
+| `title` | Full page title for the home page (appears in browser tab and search results). |
+| `description` | One-line tagline used in `<meta name="description">` and OG tags. |
+| `url` | The canonical URL of your deployed site. Used in sitemaps, canonical tags, and JSON-LD. |
+| `data_base_url` | GitHub Pages URL where the pipeline's JSON data files are served. Format: `https://YOUR-ORG.github.io/YOUR-REPO`. |
+| `publisher.name` | Your organization's display name. |
+| `publisher.url` | Your organization's website URL. |
+| `og_image` | Path to the social preview image. Replace `web/public/og.png` with your own 1200×630 image. |
+
+## Navigation
+
+The `nav` section defines the tabs shown in the site header. The `daily` key must always be first and point to `/` — it matches both the home route and all date-specific routes.
+
+```yaml
+nav:
+  - href: "/"
+    label: "Daily"
+    key: "daily"
+  - href: "/tracker"
+    label: "P(Doom)"
+    key: "tracker"
+  - href: "/about"
+    label: "About"
+    key: "about"
+```
+
+Change `label` to rename a tab. To change the `/tracker` URL slug, you also need to rename the `web/src/app/tracker/` directory to match.
+
+## Audience and voice
+
+The `audience` section is the most important configuration for the AI's editorial behavior. Every value here is injected directly into pipeline prompts — from triage through produce — shaping how the AI evaluates relevance, what it considers important, and how it writes for your readers.
+
+```yaml
+audience:
+  publication_name: "AI Dossier"
+  description: "AI safety researchers, policymakers, and technologists"
+  publication_type: "AI safety intelligence briefing"
+  topic: "AI safety"
+  topic_question: "How does this affect AI safety? Does it make catastrophic risk more or less likely?"
+  community_label: "the AI safety community"
+  register: |
+    You are writing for smart generalists who care about AI safety but are NOT
+    alignment researchers. Think: a policy staffer, a tech journalist, or a
+    curious professional who reads this over morning coffee. They should come
+    away understanding WHY something matters without needing a technical
+    background. Over time, reading this daily should turn a normie into someone
+    fluent in AI safety — but through plain-language explanation, not jargon
+    immersion. Avoid: activation vectors, residual streams, logit probes,
+    compute FLOPs, token counts, and other technical internals unless you
+    immediately explain what they mean in plain English. Focus on: what happened,
+    who did it, and why it matters for safety.
+```
+
+<AccordionGroup>
+  <Accordion title="publication_name">
+    Used in prompt preambles: "You are the triage desk at `{publication_name}`." This grounds the AI's editorial persona in your publication's identity.
+  </Accordion>
+  <Accordion title="description">
+    A short phrase describing your readership. Used in prompts to set audience expectations: "written for `{description}`."
+  </Accordion>
+  <Accordion title="publication_type">
+    Completes the sentence "You are the triage desk at [name], a `{publication_type}`." Examples: `"AI safety intelligence briefing"`, `"corporate accountability watchdog"`, `"climate policy digest"`.
+  </Accordion>
+  <Accordion title="topic">
+    Short label for your domain used throughout prompts: "downstream effect on `{topic}`", "how significant for `{topic}`?". Keep this to two or three words.
+  </Accordion>
+  <Accordion title="topic_question">
+    The key analytical question the pipeline asks during research and scoring. This directly shapes how the AI evaluates the importance of every story. Make it specific and evaluative: not just "what happened in climate" but "does this accelerate or delay decarbonization?"
+  </Accordion>
+  <Accordion title="community_label">
+    Used in the Community Pulse phase: "synthesize what `{community_label}` is discussing." Examples: `"the AI safety community"`, `"the climate policy community"`.
+  </Accordion>
+  <Accordion title="register">
+    A plain-English description of your reader, written as a system prompt instruction. Three to five sentences covering: who they are, their expertise level, what they should take away, what to avoid, and what to emphasize. This is the single biggest lever for shaping writing style.
+  </Accordion>
+</AccordionGroup>
+
+## Categories
+
+The `categories` section defines the five editorial buckets that every story in the briefing is classified into. Each category needs an `id`, a short `label` for the filter UI, a `long_label` for headings and metadata, and an `infer_tags` list that maps incoming story tags to this category automatically.
+
+```yaml
+categories:
+  - id: safety
+    label: Safety
+    long_label: "AI Safety Research"
+    infer_tags: [alignment, interpretability, evals, existential-risk, ai-safety]
+  - id: policy
+    label: Policy
+    long_label: "AI Policy & Governance"
+    infer_tags: [governance, regulation, us-policy, eu, china, global-south, policy]
+  - id: models
+    label: Models
+    long_label: "AI Models & Capabilities"
+    infer_tags: [frontier-models, capabilities, agents, benchmarks, compute, open-source, training, reasoning]
+  - id: industry
+    label: Industry
+    long_label: "AI Industry & Business"
+    infer_tags: [big-tech, startups, funding, acquisitions, labor, industry, developer-tools]
+  - id: security
+    label: Security
+    long_label: "AI Security & Cybersecurity"
+    infer_tags: [military-ai, cybersecurity, biosecurity, surveillance, privacy]
+```
+
+<Note>
+  The pipeline is designed for exactly five categories. The five category IDs must also match the IDs of the five domain editors in the `editors` section (the sixth editor, `spotlight`, is always fixed). See [Categories](/white-label/categories) for a full explanation of how tag inference works.
+</Note>
+
+## SME editors
+
+The `editors` section defines the six Subject Matter Expert editors that review incoming stories in parallel during Phase 2 of the pipeline. The first five editors must have IDs that exactly match your five category IDs. The sixth is always `spotlight`.
+
+Each editor's `expertise` block becomes the system prompt for that editor's Claude call. Write it as a precise editorial persona: who they are, what organizations they track, what their domain covers, and what they uniquely care about.
+
+```yaml
+editors:
+  - id: safety
+    name: "Safety Editor"
+    expertise: |
+      You are the Safety Editor — an expert in AI alignment, interpretability,
+      evaluations, and existential risk. You track work from MIRI, ARC, Redwood
+      Research, Anthropic's alignment team, DeepMind's safety team, CAIS, and
+      academic alignment researchers.
+
+      Your domain covers:
+      - Alignment research: RLHF, constitutional AI, scalable oversight, debate
+      - Interpretability: mechanistic interpretability, probing, circuit analysis
+      - Evaluations: model evals, dangerous capability evals, safety benchmarks
+      - Existential risk: x-risk arguments, compute governance, responsible scaling
+
+      You care deeply about whether developments make catastrophic AI risk more
+      or less likely. You notice subtle safety implications that generalist
+      editors miss.
+```
+
+<Tip>
+  The quality of your editor expertise prompts has a significant effect on story selection. A vague editor ("You cover climate news") will surface less relevant stories than a precise one that names specific organizations, sub-domains, and what the editor uniquely cares about.
+</Tip>
+
+## Tracker
+
+The `tracker` section renames the P(Doom) sentiment tracker for your domain. Every field here is purely cosmetic — the underlying scoring logic is unchanged.
+
+```yaml
+tracker:
+  name: "P(Doom)"
+  subtitle: "AI Safety Sentiment Index"
+  metric_positive: "bloom points"
+  metric_negative: "doom points"
+  stat_label: "P(Doom) Balance"
+  concept_url: "https://en.wikipedia.org/wiki/P(doom)"
+  sentiment_positive_means: "decreases P(doom) — good for AI safety"
+  sentiment_negative_means: "increases P(doom) — bad for AI safety"
+  fallback_question: "Does catastrophic AI risk go up, down, or stay the same?"
+```
+
+| Field | Description |
+|-------|-------------|
+| `name` | Display name for the tracker (e.g. `"Risk Index"`, `"Momentum Score"`, `"Trust Deficit"`). |
+| `subtitle` | Subtitle shown in the tracker page metadata. |
+| `metric_positive` | Label for good-direction signals (e.g. `"progress points"`, `"bloom points"`). |
+| `metric_negative` | Label for bad-direction signals (e.g. `"risk points"`, `"doom points"`). |
+| `stat_label` | Label on the running balance stat card. |
+| `concept_url` | Optional URL linking to an explanation of your metric. Leave empty if not applicable. |
+| `sentiment_positive_means` | One-line explanation of what a positive sentiment means in your domain. Injected into the produce prompt. |
+| `sentiment_negative_means` | One-line explanation of what a negative sentiment means in your domain. |
+| `fallback_question` | A plain-language question the AI uses when sentiment is ambiguous. |
+
+## Scoring calibration
+
+The `scoring` section gives the AI concrete, domain-specific examples of what each score tier looks like. This is critical for consistent, calibrated scoring across builds. Generic examples produce score drift; specific, grounded examples keep the scale stable.
+
+```yaml
+scoring:
+  calibration_anchors:
+    - range: "9.0–9.5"
+      label: "Paradigm shifts"
+      examples: "new international AI treaty signed, major alignment breakthrough with replication, unexpected frontier lab shutdown"
+    - range: "8.0–8.9"
+      label: "Field-shaping events"
+      examples: "new major regulation enacted, significant capability jump demonstrated, key safety org publishes landmark findings"
+    - range: "6.5–7.9"
+      label: "Important developments"
+      examples: "notable policy proposals, meaningful research papers, significant corporate announcements"
+    - range: "5.0–6.4"
+      label: "Relevant news"
+      examples: "industry moves, funding rounds, incremental research, personnel changes at key orgs"
+    - range: "3.0–4.9"
+      label: "Background signal"
+      examples: "minor updates, routine announcements, tangential tech news"
+  key_org_bonus: 1.5
+  safety_policy_bonus: 1.0
+  min_score: 4.0
+```
+
+Stories from organizations listed in `key_orgs` receive a `key_org_bonus` score addition. Stories relevant across multiple categories receive the `safety_policy_bonus`. Stories below `min_score` are excluded from the briefing entirely.
+
+## Sentiment rules
+
+The `sentiment_rules` section defines the editorial logic that assigns positive, negative, or neutral sentiment to stories in each category. The produce phase uses these rules to decide how each story affects your tracker metric.
+
+```yaml
+sentiment_rules:
+  governance:
+    label: "Governance & Policy"
+    rules:
+      - condition: "New regulation, oversight, or accountability created"
+        default: "positive"
+      - condition: "Regulation delayed with reasonable justification"
+        default: "neutral"
+      - condition: "Regulation weakened or rolled back under pressure"
+        default: "negative"
+```
+
+Write one section per category. Each rule has a `condition` (what happened) and a `default` sentiment. You can add an optional `reason` or `note` to explain the reasoning to the AI.
+
+## About and privacy page content
+
+The `about` and `privacy` sections contain the prose that appears on your `/about` and `/privacy` pages. You can use a small set of template variables that are replaced at build time:
+
+- `{site.name}` — your publication name
+- `{site.publisher.name}` — your publisher name
+- `{site.publisher.url}` — your publisher URL
+- `{tracker.name}` — your tracker name
+- `{tracker.metric_positive}` and `{tracker.metric_negative}` — your metric labels
+- `{tracker.concept_url}` — your tracker concept URL
+
+HTML is permitted inside paragraph strings. The privacy section has a sensible generic default that works for most deployments — review it but you likely won't need to change it.

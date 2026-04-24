@@ -1,0 +1,76 @@
+---
+title: "White-label intelligence briefing platform"
+description: "Deploy your own branded daily intelligence briefing on any domain. Fork the repo, configure two files, add your API keys, and you're live."
+sidebarTitle: "Overview"
+---
+
+The white-label platform lets you run the same agentic editorial pipeline that powers Aisafety on your own domain, for your own audience, with your own branding. You fork the repository, swap out two configuration files, add your API keys as GitHub Secrets, and the daily pipeline runs automatically every morning — publishing a ranked, scored briefing under your name with no ongoing manual work.
+
+The platform is built for topics where signal extraction from a noisy information environment has real value: AI policy, biosecurity, corporate accountability, climate governance, cybersecurity, and similar domains. If your field has a steady stream of RSS-accessible publications and would benefit from a ranked daily brief, the pipeline adapts to it cleanly.
+
+## What you can customize
+
+Everything visible to your readers is controlled by two files: `config/tenant.yaml` and `sources.yaml`.
+
+<CardGroup cols={2}>
+  <Card title="Site identity" icon="pen">
+    Publication name, URL, tagline, publisher credit, OG image, and navigation labels.
+  </Card>
+  <Card title="Audience & voice" icon="users">
+    Who reads your briefing and how the AI should write for them — injected into every prompt.
+  </Card>
+  <Card title="Editorial categories" icon="folder">
+    Five topic categories with labels and tag mappings that organize every story in the briefing.
+  </Card>
+  <Card title="Sentiment tracker" icon="chart-line">
+    Rename the P(Doom) tracker to match your domain — your own metric name, positive label, and negative label.
+  </Card>
+  <Card title="RSS sources" icon="rss">
+    The full list of feeds the pipeline monitors — add, remove, or reprioritize for your topic.
+  </Card>
+  <Card title="Page content" icon="file-text">
+    The about page, privacy policy, and tracker explainer text — all editable prose in YAML.
+  </Card>
+</CardGroup>
+
+## What you need before you start
+
+<CardGroup cols={2}>
+  <Card title="GitHub account" icon="github">
+    You'll fork the repository and use GitHub Actions for the daily pipeline and GitHub Pages for the static data output.
+  </Card>
+  <Card title="Anthropic API key" icon="key">
+    Required. All AI calls in the pipeline — triage, SME editors, chief editor, produce, and post-mortem — use Claude models.
+  </Card>
+  <Card title="OpenAI API key" icon="key">
+    Optional but recommended. Enables embedding-based deduplication and event matching. Adds roughly $0.01 per daily build.
+  </Card>
+  <Card title="Cloudflare account" icon="cloud">
+    Optional. Required only if you want to deploy the interactive Next.js web app (with the timeline, tracker chart, and graph views) to Cloudflare Workers. GitHub Pages alone is sufficient for the static briefing.
+  </Card>
+</CardGroup>
+
+## How the pieces fit together
+
+The pipeline runs as a GitHub Actions cron job at 8:10 AM Berlin time every day. It reads your `sources.yaml` to fetch RSS feeds, runs the agentic editorial pipeline using your `config/tenant.yaml` settings, writes structured JSON output to `data/`, and deploys to GitHub Pages. The Next.js web app reads that data and renders your branded briefing.
+
+<Note>
+  The pipeline is designed for exactly five editorial categories and six SME editors (five domain editors plus one spotlight editor). The template and validation scripts enforce this structure.
+</Note>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/white-label/quickstart">
+    Deploy your briefing in five steps — from fork to first build.
+  </Card>
+  <Card title="Tenant configuration" icon="settings" href="/white-label/tenant-config">
+    Full reference for every section of `config/tenant.yaml`.
+  </Card>
+  <Card title="Sources" icon="rss" href="/white-label/sources">
+    Configure the RSS feeds your pipeline monitors.
+  </Card>
+  <Card title="Deployment" icon="globe" href="/white-label/deployment">
+    Set up GitHub Pages and Cloudflare Workers for production.
+  </Card>
+</CardGroup>

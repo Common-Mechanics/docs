@@ -1,0 +1,119 @@
+---
+title: "Access briefings for AI and LLM pipelines"
+description: "Fetch today's AI safety briefing as plain text for LLM workflows, chatbots, and RAG pipelines. Includes AI crawler access and sitemap details."
+sidebarTitle: "LLM Access"
+---
+
+If you're building an AI workflow that needs daily context about AI safety developments, AISAFETY.FYI provides a plain-text endpoint designed for exactly that use case. The endpoint returns today's complete briefing in clean, structured Markdown — no HTML, no navigation chrome, no scripts.
+
+## Plain-text endpoint
+
+```text
+GET https://aisafety.fyi/llms-full.txt
+```
+
+The response is `text/plain; charset=utf-8`. It includes:
+
+- Today's headline and executive summary
+- All lead stories with titles, sources, one-liner summaries, and source URLs
+- The full ranked story list with composite scores
+- Active story arcs — ongoing threads tracked across multiple days
+- Links to additional data access endpoints for deeper context
+
+The content is cached for 5 minutes and refreshes automatically after each daily build.
+
+## Example requests
+
+<CodeGroup>
+
+```bash curl
+curl https://aisafety.fyi/llms-full.txt
+```
+
+```python Python
+import urllib.request
+
+url = "https://aisafety.fyi/llms-full.txt"
+with urllib.request.urlopen(url) as response:
+    briefing = response.read().decode("utf-8")
+
+print(briefing)
+```
+
+```javascript JavaScript (fetch)
+const response = await fetch("https://aisafety.fyi/llms-full.txt");
+const briefing = await response.text();
+
+console.log(briefing);
+```
+
+</CodeGroup>
+
+## What the response looks like
+
+The plain-text response follows a consistent Markdown structure that LLMs parse well:
+
+```
+# AISAFETY.FYI
+
+> Daily AI safety intelligence briefing. Curated every morning from 60+ sources...
+
+## Today's Dossier (24th Apr 2026)
+
+### [Headline]
+
+[Executive summary]
+
+### Lead Stories
+
+**[Story title]** ([Source name])
+[One-liner summary]
+Link: https://...
+
+### All Stories
+
+- [Story title] ([Source]) — Score: 8.4
+- ...
+
+## Active Story Arcs
+
+**[Arc title]** (12 stories, 2026-03-01 → 2026-04-24)
+[Arc summary]
+
+## Data Access
+- Per-day Markdown: https://aisafety.fyi/md/YYYY-MM-DD
+- RSS: https://aisafety.fyi/rss
+- JSON Feed: https://aisafety.fyi/feed.json
+- ...
+```
+
+## AI crawler access
+
+AISAFETY.FYI explicitly welcomes all AI crawlers. The `robots.txt` at `https://aisafety.fyi/robots.txt` grants full access to GPTBot, ClaudeBot, PerplexityBot, and all other AI indexing agents. There are no crawler restrictions on any content pages.
+
+The dynamic sitemap at `https://aisafety.fyi/sitemap.xml` lists every past dossier URL in a standard format, making it straightforward for crawlers to discover and index the full archive of briefings by date.
+
+<Note>
+  The sitemap updates automatically with each new daily build, so it always reflects the complete set of available dates.
+</Note>
+
+## Suggested use cases
+
+<CardGroup cols={2}>
+  <Card title="Daily context injection" icon="bolt">
+    Fetch the briefing each morning and inject it into your system prompt to give your assistant up-to-date AI safety context.
+  </Card>
+  <Card title="RAG pipeline source" icon="database">
+    Use the plain-text endpoint as a daily ingestion source for a retrieval-augmented generation system covering AI safety news.
+  </Card>
+  <Card title="Chatbot grounding" icon="message-bot">
+    Ground an AI safety chatbot with the latest developments before each conversation session.
+  </Card>
+  <Card title="Monitoring and alerts" icon="bell">
+    Diff today's briefing against yesterday's to detect significant new developments and trigger alerts.
+  </Card>
+</CardGroup>
+
+<Tip>
+  For historical briefings, use the per-day Markdown endpoint at `https://aisafety.fyi/md/YYYY-MM-DD`. These pages are also AI-assistant friendly and follow the same plain-prose structure.
+</Tip>

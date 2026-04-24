@@ -1,0 +1,102 @@
+---
+title: "Defining editorial categories"
+description: "Categories organize every story in your briefing into five topic buckets. Learn how to define categories and configure tag inference in tenant.yaml."
+sidebarTitle: "Categories"
+---
+
+Categories are the five editorial buckets that every story in your briefing is classified into. They appear as filter pills in the daily briefing, as URL slugs at `/category/[slug]`, and as the organizational structure for the five domain SME editors in the pipeline. Choosing categories that genuinely partition your topic domain — with minimal overlap and clear boundaries — leads to better story selection and more useful filtering for your readers.
+
+## How categories are defined
+
+Categories live in `config/tenant.yaml` under the `categories` key. The pipeline expects exactly five entries. Each entry needs four fields:
+
+```yaml
+categories:
+  - id: safety
+    label: Safety
+    long_label: "AI Safety Research"
+    infer_tags: [alignment, interpretability, evals, existential-risk, ai-safety]
+  - id: policy
+    label: Policy
+    long_label: "AI Policy & Governance"
+    infer_tags: [governance, regulation, us-policy, eu, china, global-south, policy]
+  - id: models
+    label: Models
+    long_label: "AI Models & Capabilities"
+    infer_tags: [frontier-models, capabilities, agents, benchmarks, compute, open-source, training, reasoning]
+  - id: industry
+    label: Industry
+    long_label: "AI Industry & Business"
+    infer_tags: [big-tech, startups, funding, acquisitions, labor, industry, developer-tools]
+  - id: security
+    label: Security
+    long_label: "AI Security & Cybersecurity"
+    infer_tags: [military-ai, cybersecurity, biosecurity, surveillance, privacy]
+```
+
+| Field | Description |
+|-------|-------------|
+| `id` | Unique identifier used internally by the pipeline and as the URL slug. Must be lowercase, no spaces. Must match the `id` of the corresponding SME editor in the `editors` section. |
+| `label` | Short display label shown in filter pills and category badges (e.g. `Safety`, `Policy`). |
+| `long_label` | Full label used in headings, metadata, and the category page title (e.g. `"AI Safety Research"`). |
+| `infer_tags` | List of tags from your tag taxonomy that map to this category. Used for automatic category assignment when a story has matching tags. |
+
+## Tag inference
+
+Tag inference is the mechanism that automatically assigns a category to a story when the story's tags overlap with a category's `infer_tags` list. During the produce phase, the AI assigns 1–4 tags to each story from your tag taxonomy. After produce, a mechanical step checks those tags against each category's `infer_tags` list to confirm or correct the category assignment.
+
+For tag inference to work well:
+
+- Tags in `infer_tags` should be mutually exclusive across categories where possible. A tag that appears in two categories' `infer_tags` lists will resolve to the first matching category.
+- Keep your `infer_tags` lists comprehensive. Tags that don't appear in any category's `infer_tags` will rely entirely on the AI's direct category assignment from the produce prompt, without the mechanical confirmation step.
+- The tags in `infer_tags` must be a subset of your `tags` list in `tenant.yaml`. Tags not in the taxonomy will never be assigned to stories.
+
+<Note>
+  The pipeline is designed for exactly five categories. This matches the five domain SME editors that run in parallel during Phase 2 of the build. Do not add a sixth category — the pipeline does not support it and the validation script will report an error.
+</Note>
+
+## Connecting categories to editors
+
+Each category's `id` must exactly match the `id` of one editor in the `editors` section. The editor for a category is the Subject Matter Expert who reviews incoming stories for that domain during the triage phase. The connection is by matching ID strings — there is no separate wiring step.
+
+```yaml
+# Category definition
+categories:
+  - id: policy
+    label: Policy
+    long_label: "AI Policy & Governance"
+    infer_tags: [governance, regulation, us-policy, eu, china, global-south, policy]
+
+# Matching editor — same id value
+editors:
+  - id: policy
+    name: "Policy Editor"
+    expertise: |
+      You are the Policy Editor — an expert in AI governance, regulation,
+      and geopolitics. You track legislative developments, executive orders,
+      international agreements, and institutional decisions across US, EU,
+      UK, China, India, and the Global South.
+      ...
+```
+
+The sixth editor always has the ID `spotlight` and covers non-text media content (podcasts, videos, demos). This editor does not correspond to a category — its selections appear in the Spotlight section of the briefing, separate from the five main categories.
+
+## After editing categories
+
+After changing your categories in `tenant.yaml`, run the sync script to regenerate `web/src/lib/categories.ts`, which is the frontend's single source of truth for category definitions and tag inference:
+
+```bash
+node scripts/sync-tenant-config.js
+```
+
+Then validate the full config:
+
+```bash
+node scripts/validate-tenant-config.js
+```
+
+The validator checks that all five category IDs have matching editor IDs, that no `infer_tags` are duplicated across categories, and that all tags in `infer_tags` exist in the `tags` taxonomy.
+
+<Warning>
+  Do not edit `web/src/lib/categories.ts` directly. It is overwritten every time you run `sync-tenant-config.js`. All category changes belong in `config/tenant.yaml`.
+</Warning>

@@ -1,0 +1,115 @@
+---
+title: "How the Editorial Pipeline Works"
+description: "Every morning, aisafety.fyi runs a fully automated editorial pipeline — 114 RSS feeds, six domain editors, and a chief editor — to produce your daily briefing."
+sidebarTitle: "Editorial Process"
+---
+
+Every morning, the pipeline behind aisafety.fyi wakes up and works through the AI safety news landscape so you don't have to. It reads from 114 curated sources, applies layers of filtering and editorial judgment, and produces a ranked briefing in time for your morning read. Here is exactly what happens — and why each step exists.
+
+<Note>
+  The pipeline uses Claude AI models at different stages: Claude Haiku handles fast, high-volume filtering tasks; Claude Sonnet runs the six domain editor reviews, research, and drafting; and Claude Opus serves as Chief Editor, making the final selection and ranking decisions.
+</Note>
+
+<Steps>
+  <Step title="RSS aggregation and keyword filtering">
+    The pipeline fetches 114 RSS feeds covering AI safety research, governance, frontier models, industry, security, and media. Every feed is checked within a 28-hour window — slightly overlapping with the previous day — so that late-breaking stories are never missed.
+
+    Before any editorial judgment is applied, a keyword filter removes obvious noise: job postings, weekly roundup newsletters, and arXiv papers unrelated to safety, alignment, or governance. Of the roughly 300 arXiv papers submitted on a given day, this filter typically passes 15–30 that are relevant to the briefing's mandate.
+  </Step>
+
+  <Step title="Semantic deduplication">
+    The same press release often runs across six or more outlets simultaneously. Rather than let every version compete for space, the pipeline embeds all story titles and clusters those with very high semantic similarity together. Only the item from the highest-priority source in each cluster advances. This step happens before any AI editor sees the materials, keeping the editorial workload focused on genuinely distinct stories.
+  </Step>
+
+  <Step title="Novelty classification">
+    Every story that clears the filters is classified into one of three categories — and ten sub-classes — based on how much genuinely new information it introduces:
+
+    <CardGroup cols={3}>
+      <Card title="Breaking" icon="bolt">
+        Reports genuinely new information for the first time — a research result, a policy decision, a product launch, or an organizational development. Breaking stories have the highest score ceilings and can reach the top intensity levels.
+      </Card>
+      <Card title="Continuation" icon="arrow-right">
+        Follows a known developing story. A continuation that escalates or resolves a situation can still carry strong signal; one that simply maintains the status quo is scored more conservatively.
+      </Card>
+      <Card title="Commentary" icon="message-square">
+        Interprets or synthesizes known facts without introducing new primary information. Commentary can still earn strong editorial placement for quality and context, but its contribution to the safety signal tracker is capped.
+      </Card>
+    </CardGroup>
+
+    Novelty classification is the mechanism that prevents opinion amplification from inflating the tracker. A well-written commentary about a Pentagon AI deal already covered yesterday stays at a lower intensity ceiling than the original scoop — even if it is written brilliantly and reads as alarming.
+  </Step>
+
+  <Step title="Six domain editors review in parallel">
+    Six specialized editors read the full set of triaged and classified materials simultaneously. Each editor brings deep expertise in their domain and watches for stories that a generalist might underweight or miss.
+
+    <AccordionGroup>
+      <Accordion title="Safety Editor">
+        Covers AI alignment, interpretability, evaluations, and existential risk. Tracks work from alignment research organizations, interpretability teams, and red-teaming groups. Assesses whether developments make catastrophic AI risk more or less likely.
+      </Accordion>
+      <Accordion title="Policy Editor">
+        Covers governance, regulation, legislation, and geopolitics. Tracks the EU AI Act, executive orders, international agreements, and think tank output from GovAI, CSET, Brookings, and RAND. Distinguishes substantive regulatory moves from performative ones.
+      </Accordion>
+      <Accordion title="Models Editor">
+        Covers frontier model releases, capability developments, scaling research, and open-source models. Tracks Anthropic, OpenAI, DeepMind, Meta, Mistral, and the broader ML research community. Identifies genuine breakthroughs versus incremental improvements or marketing.
+      </Accordion>
+      <Accordion title="Industry Editor">
+        Covers the AI business landscape: corporate strategy, funding rounds, acquisitions, product launches, and labor dynamics. Assesses whether corporate moves signal genuine shifts or routine business activity.
+      </Accordion>
+      <Accordion title="Security Editor">
+        Covers military AI, cybersecurity, biosecurity, surveillance, and dual-use risks. Tracks defense agencies, security researchers, and risk analysts. Assesses security implications with nuance — some developments increase risk, others improve defensive capabilities.
+      </Accordion>
+      <Accordion title="Spotlight Editor">
+        Finds notable non-text content: podcasts, videos, interactive demos, and the culturally significant side of AI. Prioritizes content that an AI safety audience would find genuinely illuminating or thought-provoking.
+      </Accordion>
+    </AccordionGroup>
+  </Step>
+
+  <Step title="Chief Editor resolves and ranks">
+    After the six editors submit their reviews, a single Chief Editor pass reads all of them together. This is where cross-domain signals are noticed — a story that two editors flagged independently from different angles is a strong selection signal. The Chief Editor resolves any disagreements between editors, applies bonuses for stories from key organizations in the AI safety ecosystem, and produces a final ranked selection of leads and ticker items.
+
+    If the Chief Editor is unavailable, a Deputy Chief Editor steps in using the same editorial mandate and prompt. All deputy decisions are flagged in the build record.
+  </Step>
+
+  <Step title="Research phase">
+    For the top candidates, the pipeline fetches the full text of each article. This gives the drafting phase real depth: rather than writing from a headline and excerpt, the produce step reads the actual reporting and can surface specific findings, quotes, and context that a summary would miss.
+
+    At the same time, a Community Pulse scan reads what the AI safety community is actively discussing on Bluesky, LessWrong, and the Alignment Forum. This provides texture for the briefing's editorial voice.
+  </Step>
+
+  <Step title="Write the dossier">
+    With the ranked selection and research notes in hand, the drafting phase writes the complete dossier: headline, executive summary, lead briefings, one-liners, scores, sentiment ratings, and editorial quips. Every item is scored and labeled according to the rules described in the [Scoring](/methodology/scoring) and [Sentiment](/methodology/sentiment) pages.
+
+    Character limits keep the writing disciplined: one-liners stay under 130 characters, briefings under 500, and the executive summary under 450. No bullet points appear in briefings — everything is editorial prose.
+  </Step>
+
+  <Step title="Quality assurance">
+    Before the dossier is published, a final QA pass runs two checks:
+
+    1. **Cross-day deduplication.** Today's items are compared against 30 recent dossiers. Stories that are too similar to recent coverage are flagged and, where appropriate, removed or consolidated. This prevents the same story from running multiple days in a row without genuinely new developments.
+
+    2. **Lead cap enforcement.** A maximum of three stories can appear as leads. If more were selected, the extras are demoted to the ticker — they keep their scores, but their placement reflects the cap. Leads are ordered by intensity (safety signal strength) first, with the composite score as a tiebreaker.
+  </Step>
+</Steps>
+
+<AccordionGroup>
+  <Accordion title="Why should I trust this?">
+    The pipeline is designed with layered checks at every step. Novelty classification prevents opinion from being mistaken for news. The six-editor structure means domain specialists catch stories that a single generalist would miss. The Chief Editor reads all reviews together before making any final decision, so no individual editor can skew the output. Every build produces a complete audit trail — including all editorial deliberations, research notes, and the rationale behind selection decisions — that is preserved for review.
+
+    The pipeline also runs a nightly post-mortem that grades itself on editorial quality and flags systematic problems for the next build.
+  </Accordion>
+  <Accordion title="What gets excluded?">
+    Several categories of content are filtered out before editorial review begins:
+
+    - **Job postings and hiring announcements** — useful for researchers, not for daily briefings
+    - **Weekly roundup newsletters** — these aggregate news that the pipeline has already seen
+    - **Off-topic arXiv papers** — the keyword filter passes only safety, alignment, governance, and capability-adjacent papers from the roughly 300 submitted each day
+    - **Raw arXiv preprints as leads** — even highly relevant arXiv papers cannot appear as lead stories; they can appear in the ticker (up to three per day) with their intensity capped
+
+    Content that passes filtering but does not meet the editorial bar during SME review or Chief Editor selection is retained as background context for the event timeline, rather than discarded entirely.
+  </Accordion>
+  <Accordion title="What is the arXiv rule?">
+    Raw arXiv preprints — papers posted directly to arXiv before peer review or independent coverage — face stricter placement rules. They cannot appear as lead stories, and a maximum of three arXiv papers can appear in any single ticker. Their intensity (safety signal strength) is also capped, because preprints have not yet been vetted or contextualized by independent reporting.
+
+    This rule exists because arXiv papers, while often significant, can be preliminary, superseded, or misinterpreted. A paper that later receives independent coverage and editorial contextualization can earn full scoring at that point.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,88 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Aisafety",
+  "theme": "almond",
+  "colors": {
+    "primary": "#7b6610",
+    "light": "#e9ddba",
+    "dark": "#2f2b20"
+  },
+  "favicon": "https://media.brand.dev/2cfe4e11-f7f4-4a2f-af4c-c5be87eb994a.png",
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/Common-Mechanics/ai-dossier"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Using Aisafety",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "how-it-works",
+              "reading-the-dossier"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/daily-briefing",
+              "features/pdoom-tracker",
+              "features/timeline",
+              "features/context-graph",
+              "features/podcast"
+            ]
+          },
+          {
+            "group": "Data & Feeds",
+            "pages": [
+              "data/rss-feed",
+              "data/llm-access",
+              "data/sources",
+              "data/categories"
+            ]
+          },
+          {
+            "group": "Scoring & Methodology",
+            "pages": [
+              "methodology/editorial-process",
+              "methodology/scoring",
+              "methodology/sentiment"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "White-Label",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "white-label/overview",
+              "white-label/quickstart"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "white-label/tenant-config",
+              "white-label/sources",
+              "white-label/categories"
+            ]
+          },
+          {
+            "group": "Deployment",
+            "pages": [
+              "white-label/deployment",
+              "white-label/environment-variables"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

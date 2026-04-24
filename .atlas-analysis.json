@@ -1,0 +1,106 @@
+{
+  "projectType": "saas",
+  "projectName": "Aisafety",
+  "projectDescription": "A daily AI safety intelligence briefing that aggregates 114 RSS feeds, analyzes them with an agentic Claude pipeline, and publishes a ranked daily dossier every morning.",
+  "theme": "almond",
+  "primaryColor": "#7b6610",
+  "lightColor": "#e9ddba",
+  "darkColor": "#2f2b20",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Using Aisafety",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "how-it-works",
+              "reading-the-dossier"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/daily-briefing",
+              "features/pdoom-tracker",
+              "features/timeline",
+              "features/context-graph",
+              "features/podcast"
+            ]
+          },
+          {
+            "group": "Data & Feeds",
+            "pages": [
+              "data/rss-feed",
+              "data/llm-access",
+              "data/sources",
+              "data/categories"
+            ]
+          },
+          {
+            "group": "Scoring & Methodology",
+            "pages": [
+              "methodology/editorial-process",
+              "methodology/scoring",
+              "methodology/sentiment"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "White-Label",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "white-label/overview",
+              "white-label/quickstart"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "white-label/tenant-config",
+              "white-label/sources",
+              "white-label/categories"
+            ]
+          },
+          {
+            "group": "Deployment",
+            "pages": [
+              "white-label/deployment",
+              "white-label/environment-variables"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Daily AI safety briefing aggregated from 114 curated RSS feeds",
+    "Agentic editorial pipeline modeled after a real newsroom (6 SME editors + Chief Editor)",
+    "P(Doom) Tracker — sentiment scoring with doom/bloom points over time",
+    "Event Timeline — story arcs tracking how narratives develop across multiple dossiers",
+    "Context Graph — interactive knowledge graph of entities, relationships, and causal connections",
+    "Daily podcast with forced word-level transcript alignment",
+    "RSS feed and LLM-friendly plain-text endpoint",
+    "White-label multi-tenant architecture for custom domain deployments",
+    "Category filtering: Safety, Policy, Models, Industry, Security",
+    "Privacy-first analytics (Plausible, no cookies)"
+  ],
+  "publicApiSurface": [
+    "GET /rss — RSS feed (XML, 30 most recent dossiers)",
+    "GET /llms-full.txt — LLM-friendly plain-text summary of today's dossier",
+    "GET /feed.json — JSON feed",
+    "GET /sitemap.xml — dynamic sitemap",
+    "GET /[date] — date-specific dossier (e.g. /2026-03-14)",
+    "GET /timeline — event timeline with story arcs",
+    "GET /timeline/[slug] — single arc detail page",
+    "GET /tracker — P(Doom) tracker with charts and table",
+    "GET /graph — context graph (7 interactive views)",
+    "GET /archive — full archive of past dossiers",
+    "GET /category/[slug] — category-filtered view",
+    "POST /api/admin/test-feed — feed health check and discovery"
+  ]
+}

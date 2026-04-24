@@ -1,0 +1,80 @@
+---
+title: "Sentiment Ratings and What They Mean"
+description: "Sentiment on aisafety.fyi reflects the directional impact on AI safety — not the tone of the article. Here is how positive, negative, and neutral are defined."
+sidebarTitle: "Sentiment"
+---
+
+Every story in the briefing carries a sentiment rating: **positive**, **negative**, or **neutral**. These labels do not describe how the article is written or how it feels to read. They describe the direction of the story's impact on AI safety — whether the event it reports makes the AI safety situation better, worse, or neither. This distinction matters: a frightening-sounding headline about a newly discovered vulnerability might carry a positive rating, because the act of finding and disclosing it strengthens the field's ability to respond.
+
+<Note>
+  Sentiment is an editorial judgment made by the AI pipeline, not a mathematical output. The pipeline works from a detailed decision tree, but it can deviate when a specific story warrants a different reading — and it records its reasoning when it does.
+</Note>
+
+<Tabs>
+  <Tab title="Positive">
+    A positive rating means the story suggests the AI safety situation is improving, or that a development is contributing to better outcomes for the field.
+
+    Common reasons for a positive rating:
+
+    - A new safety technique, evaluation framework, or interpretability tool is published
+    - A vulnerability or failure mode is discovered and disclosed — disclosure itself is a contribution to safety
+    - A government body creates a new oversight or accountability mechanism
+    - A lab publishes safety evaluations before a model release, strengthening transparency norms
+    - A court ruling, regulatory decision, or international agreement strengthens AI governance
+    - A company course-corrects after an AI failure, adding human oversight
+
+    **The key test for safety research:** "Is the act of publishing this research itself a contribution to safety?" If a paper finds that a widely trusted oversight method does not work, that finding — even though alarming — earns a positive rating. The field now knows not to rely on that method. Discovering problems is how safety research works.
+
+    <Tip>
+      A positive sentiment does not mean the news is good in a conventional sense. A paper demonstrating that current AI systems deceive their evaluators is alarming — and positive, because the field now has empirical evidence to act on.
+    </Tip>
+  </Tab>
+  <Tab title="Negative">
+    A negative rating means the story suggests the AI safety situation is deteriorating, or that a development increases the likelihood of harmful outcomes.
+
+    Common reasons for a negative rating:
+
+    - AI is deployed in lethal decision-making chains with reduced human oversight
+    - A lab accelerates development timelines citing competitive pressure, prioritizing speed over safety
+    - Existing safety regulations are delayed, weakened, or rolled back under industry pressure
+    - A company removes safety guardrails for competitive advantage
+    - Safety team departures, budget cuts, or restructuring that reduces a lab's safety capacity
+    - Massive capability scaling without proportional safety investment, widening the gap between capability and alignment
+    - A deployed AI system causes real-world harm, demonstrating inadequate safety measures
+
+    **The key test for industry news:** "Does this change the balance between AI capability and AI safety?" Racing dynamics, safety erosion, and governance rollback all shift that balance in the wrong direction. Routine product launches and business activity that do not change the safety landscape are neutral, not negative.
+  </Tab>
+  <Tab title="Neutral">
+    A neutral rating means the story carries no clear directional signal for AI safety. The event is informational — worth knowing about, but it does not meaningfully move the situation toward better or worse outcomes.
+
+    Common neutral stories:
+
+    - Pure capability announcements without a safety dimension
+    - Personnel moves and corporate restructuring that do not affect safety capacity
+    - Infrastructure buildouts (new data centers, chip orders) without accompanying safety investment or reckless timelines
+    - Regulatory delays with pragmatic justification, where the final outcome remains unclear
+    - Academic documentation of a phenomenon without clear safety implications
+    - Reporting on military AI programs without new deployment decisions
+
+    Neutral does not mean unimportant. A story can be significant — worth reading, worth understanding — while carrying no directional signal for the safety tracker.
+  </Tab>
+</Tabs>
+
+## How Sentiment Feeds the P(Doom) Tracker
+
+Sentiment and intensity together determine each story's contribution to the P(Doom) Tracker. The tracker accumulates two types of points from each day's briefing:
+
+- **Doom points** — from negative stories with an intensity of 1 or higher, scaled by their intensity level
+- **Bloom points** — from positive stories with an intensity of 1 or higher, scaled by their intensity level
+
+Neutral stories, and any stories with an intensity of 0, do not contribute to the tracker in either direction. This means that routine business news, capability announcements, and informational coverage have no effect on the running signal — only stories with a concrete directional impact on AI safety move the needle.
+
+<Note>
+  Stories classified as **Commentary — factual** (restatements of known facts without new analysis) carry zero tracker signal regardless of their sentiment rating. Commentary cannot inflate the tracker with opinion amplification of events already counted when they were first reported.
+</Note>
+
+## Why This Approach
+
+Tying sentiment to directional safety impact — rather than to the emotional register of the writing — produces a signal that measures reality rather than media climate. A week of alarming headlines about a known risk does not move the tracker the same way a single new policy decision does. Conversely, a quietly published safety evaluation that meaningfully advances the field's ability to assess dangerous capabilities earns a positive rating even if no outlet covered it with fanfare.
+
+The sentiment decision tree the pipeline uses was developed from analysis of how different types of AI safety news actually affect the field's trajectory. It covers safety research, governance and policy, military AI, and industry dynamics, with specific rules for common edge cases — and a fallback question for everything else: *"If this development plays out, does catastrophic AI risk go up, down, or stay the same?"*

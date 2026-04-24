@@ -1,0 +1,70 @@
+---
+title: "Content categories and tags"
+description: "Aisafety covers five editorial categories — Safety, Policy, Models, Industry, Security — plus fine-grained tags for precise filtering across briefings."
+sidebarTitle: "Categories"
+---
+
+Every story that appears in the daily briefing — whether as a lead or a ticker item — is assigned one **editorial category** and up to four **tags**. Categories define the broad domain a story belongs to; tags give finer-grained signal about the specific topic within that domain. Both are assigned by the editorial pipeline at publish time, not added retroactively.
+
+## The five editorial categories
+
+| Category | What it covers |
+|----------|----------------|
+| **Safety** | Alignment research, interpretability, model evaluations, existential risk analysis, AI safety techniques and tools |
+| **Policy** | Governance frameworks, regulation, US policy, EU AI Act, China AI strategy, global south AI policy, international agreements |
+| **Models** | Frontier model releases and capabilities, agents, reasoning systems, benchmarks, compute infrastructure, open-source models, training methods |
+| **Industry** | Big tech strategy, startups and funding, acquisitions, labor and talent, developer tools, corporate AI moves |
+| **Security** | Military AI and autonomous weapons, cybersecurity, biosecurity, surveillance, privacy, dual-use risks |
+
+These categories map directly to the five domain editors in the editorial pipeline — a Safety Editor, Policy Editor, Models Editor, Industry Editor, and Security Editor each review the day's stories from within their domain before the Chief Editor makes final selections.
+
+## Fine-grained tags
+
+Tags are more specific than categories and carry enough detail to distinguish, for example, an alignment research paper from a model evaluation study — both would be `Safety`, but with different tags.
+
+The full tag taxonomy:
+
+<AccordionGroup>
+  <Accordion title="Safety tags">
+    `alignment`, `interpretability`, `evals`, `existential-risk`
+  </Accordion>
+  <Accordion title="Policy tags">
+    `governance`, `regulation`, `policy`, `ethics`, `us-policy`, `eu`, `china`, `global-south`, `india`
+  </Accordion>
+  <Accordion title="Models tags">
+    `frontier-models`, `capabilities`, `agents`, `benchmarks`, `reasoning`, `multimodal`, `robotics`, `compute`, `training`, `inference`, `fine-tuning`, `data`, `open-source`
+  </Accordion>
+  <Accordion title="Industry tags">
+    `big-tech`, `startups`, `funding`, `acquisitions`, `labor`, `developer-tools`, `design-tools`
+  </Accordion>
+  <Accordion title="Security tags">
+    `military-ai`, `cybersecurity`, `biosecurity`, `surveillance`, `privacy`
+  </Accordion>
+  <Accordion title="Cross-cutting tags">
+    `research`, `education`, `healthcare`, `climate`
+  </Accordion>
+</AccordionGroup>
+
+Each story receives 1–4 tags. The pipeline assigns tags based on the story's content, not the source it came from — an alignment paper published on the Anthropic blog gets `alignment`, not a generic `industry` tag.
+
+## Filtering by category on the site
+
+Category pages let you view a filtered stream of briefings showing only stories in a given domain. To navigate to a category view, go to:
+
+```
+https://aisafety.fyi/category/[slug]
+```
+
+The available slugs are `safety`, `policy`, `models`, `industry`, and `security`. For example, `https://aisafety.fyi/category/policy` shows every policy story across all past briefings, in reverse chronological order.
+
+You can also filter the daily briefing in-place using the category pills in the filter bar at the top of any dossier page. Selecting a category hides all stories from other categories without leaving the page — useful if you want to quickly scan a specific domain on a given day.
+
+<Tip>
+  Category filter state is preserved in the URL, so you can bookmark a filtered view and share it. For example, bookmarking `https://aisafety.fyi/?category=safety` opens the latest briefing pre-filtered to Safety stories.
+</Tip>
+
+## How categories relate to scoring
+
+Category and tags also influence how the P(Doom) sentiment tracker works. The pipeline applies category-specific sentiment rules when assessing whether a story moves the AI safety landscape in a positive or negative direction. A new safety evaluation tool (`Safety` + `evals`) defaults to positive sentiment because measuring capability enables responsible deployment. A report of racing dynamics (`Industry` + `frontier-models`) defaults to negative because competitive pressure tends to compress safety timelines.
+
+These defaults can be overridden by the editorial pipeline when a story's context warrants a different assessment — the category-based rules are a starting point, not a ceiling.

@@ -1,0 +1,93 @@
+---
+title: "Context Graph: AI Safety Knowledge Map"
+description: "The context graph is an interactive knowledge map linking AI safety events, organisations, people, and concepts — explore connections across eight visual views."
+sidebarTitle: "Context Graph"
+---
+
+The context graph lets you explore the AI safety landscape as a connected network rather than a chronological list. Every event in the timeline, every organisation, person, or concept that appears in coverage, and every relationship between them is represented as a node or edge in the graph. You can navigate it visually to find patterns, understand influence, and see which events caused or responded to others.
+
+Visit `/graph` to open the context graph.
+
+## Available views
+
+The graph offers eight views, each showing the same underlying data through a different lens. Switch between them using the tab bar at the top of the page.
+
+<CardGroup cols={2}>
+  <Card title="Everything" icon="globe">
+    The full graph — all events, entities, and their connections in one force-directed layout. Nodes are coloured by editorial category (Safety, Policy, Models, Industry, Security) for events, and by entity type for people, organisations, and concepts.
+  </Card>
+  <Card title="Stories" icon="newspaper">
+    Events only, coloured by their net P(Doom) sentiment (red = doom, teal = bloom, grey = neutral). Use this view to spot clusters of negative or positive developments.
+  </Card>
+  <Card title="Entities" icon="building">
+    Organisations, people, models, and concepts — sized by how many stories mention them and coloured by their net sentiment association. Shows who and what is driving the coverage.
+  </Card>
+  <Card title="People & Orgs" icon="users">
+    Key actors with all nodes labelled. Connections reflect co-mentions across stories. Useful for understanding which individuals and organisations appear together.
+  </Card>
+  <Card title="Entity Hubs" icon="circles-three">
+    A hub-and-spoke layout: stories orbit their primary entities as satellite nodes. Reveals which organisations are at the centre of the most active story clusters.
+  </Card>
+  <Card title="Clusters" icon="share-network">
+    Stories grouped by topic and entity overlap into thematic clusters. Highlights areas of concentrated coverage that might not be obvious from the daily feed.
+  </Card>
+  <Card title="3D Cloud" icon="cube">
+    A three-dimensional point cloud you can rotate and zoom. The Y-axis represents sentiment, so doom and bloom events separate vertically. Good for spotting time-based or sentiment-based correlations across the full dataset.
+  </Card>
+  <Card title="Relations" icon="arrows-out">
+    Directional entity-to-entity relationships: who funds whom, who employs whom, which organisations partner, which have governance relationships. Edge colours distinguish relationship types (employment, funding, research, development, policy, partnership, governance).
+  </Card>
+</CardGroup>
+
+## Filtering and controls
+
+Use the controls panel (floating top-left on desktop, accessible via the filter button on mobile) to refine what you see:
+
+<Steps>
+  <Step title="Filter by entity type">
+    Toggle individual entity types on or off: person, organisation, model, or concept. This lets you focus on, say, only organisational nodes while hiding individual people.
+  </Step>
+  <Step title="Set the noise floor">
+    The **noise floor slider** (`minStoryCount`) controls the minimum number of story mentions an entity must have to appear in the graph. Raising this threshold hides low-frequency entities and shows only the most prominent actors. Lowering it reveals the full, denser network.
+  </Step>
+  <Step title="Filter by date range">
+    In the Stories view, use the date range filter to restrict events to a specific time window. This is useful for examining how the network looked during a particular period — a regulatory sprint, a major capability release, or a safety incident.
+  </Step>
+  <Step title="Search">
+    Type in the search box to highlight nodes matching a name or keyword.
+  </Step>
+</Steps>
+
+## Selecting a node
+
+Click any node to open the detail panel (right sidebar on desktop, bottom sheet on mobile). The panel shows:
+
+- The entity or event name
+- Type and category
+- A list of neighbouring nodes with their relationship types
+- For events: a link to the corresponding arc in the timeline
+
+Click any neighbour in the panel to navigate to that node. The URL updates to `/graph?node=[slug]` so you can share or bookmark a specific node view.
+
+## Causal connections
+
+The Stories and Clusters views draw directed edges between events that have a causal relationship — where one event triggered or responded to another. These causal links are extracted automatically from the event content and can reveal chains of consequence that a chronological feed would obscure.
+
+<Accordion title="What rendering engines does the graph use?">
+  Different views use different rendering technologies, chosen for performance and capability at scale:
+
+  - **Sigma.js (WebGL)** — used for the force-directed views: Everything, Stories, Entities, People & Orgs, Entity Hubs, and Clusters. WebGL rendering handles large graphs (hundreds of nodes and thousands of edges) smoothly.
+  - **Three.js / React Three Fiber** — used for the 3D Cloud view.
+  - **D3** — used for the Chord layout within the Entities view.
+  - **Custom SVG** — used for the Relations view.
+
+  If your browser does not support WebGL, the WebGL-dependent views will show a notice and offer to switch you to Relations or the Chord layout, which work in all browsers.
+</Accordion>
+
+<Accordion title="How are entities resolved across stories?">
+  The same organisation or person can be mentioned under many different names across hundreds of source articles ("Anthropic", "Anthropic PBC", "Anthropic AI"). A four-tier entity resolution system unifies these into a single canonical node: a hand-curated override list, exact-match canonicalisation, an alias lookup table that grows automatically, and embedding-based fuzzy matching as a fallback. This means the graph reflects genuine coverage density rather than name-spelling variation.
+</Accordion>
+
+<Note>
+  The context graph is rebuilt daily as part of the briefing pipeline. Nodes and edges reflect coverage from the past 90 days; older events are archived. The stats bar at the top of the page shows the current node count, edge count, and number of detected communities.
+</Note>

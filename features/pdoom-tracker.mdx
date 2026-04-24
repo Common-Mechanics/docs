@@ -1,0 +1,92 @@
+---
+title: "P(Doom) Tracker: AI Safety Sentiment Over Time"
+description: "The P(Doom) Tracker aggregates daily doom and bloom points to show whether the AI safety landscape is trending better or worse over time."
+sidebarTitle: "P(Doom) Tracker"
+---
+
+The P(Doom) Tracker answers a single question: is the AI safety news landscape getting better or worse? Every story in every daily briefing is assessed for its directional impact on catastrophic AI risk, assigned a point value, and added to a running total. The tracker charts that total across time so you can see multi-week trends rather than just reacting to individual headlines.
+
+<Note>
+  "P(Doom)" here is a metaphorical index, not a literal probability estimate of AI-caused catastrophe. It is a convenient shorthand for the directional sentiment of AI safety news — borrowed from the AI safety community's own vocabulary. A rising line means the news has been net-negative for AI safety; a falling line means the reverse.
+</Note>
+
+## How scoring works
+
+Each story in the daily briefing receives two pieces of data during editorial production:
+
+1. **Sentiment** — whether the story is positive, negative, or neutral for AI safety.
+2. **Intensity** — how important the story is, on a scale of 0 to 3.
+
+Negative stories (developments that increase catastrophic AI risk) contribute **doom points**. Positive stories (developments that reduce it) contribute **bloom points**. The number of points awarded equals the story's intensity:
+
+| Intensity | Points awarded |
+|-----------|---------------|
+| 3 | 3 doom or bloom points |
+| 2 | 2 doom or bloom points |
+| 1 | 1 doom or bloom point |
+| 0 | No points |
+
+Neutral stories contribute nothing to the tracker.
+
+## What you see on the page
+
+The tracker displays three visualisations of the same underlying data.
+
+<CardGroup cols={3}>
+  <Card title="Diverging bar chart" icon="chart-bar">
+    Each day appears as a pair of stacked bars — red for doom points, teal for bloom points. The net balance for that day is visible at a glance. Hover a day to see the exact breakdown.
+  </Card>
+  <Card title="Cumulative line chart" icon="chart-line">
+    A running total of doom points minus bloom points across all days in view. A rising line means doom is accumulating faster; a falling line means bloom is winning.
+  </Card>
+  <Card title="Data table" icon="table">
+    Every scored story in sortable tabular form: headline, date, category, sentiment, intensity, and importance score. Click a row to open a sidebar with the full briefing entry for that day.
+  </Card>
+</CardGroup>
+
+## Stat cards
+
+Above the charts, three stat cards summarise the current state of the tracker:
+
+- **P(Doom) Balance** — the net cumulative total (doom points minus bloom points) over the selected time range.
+- **7-Day Trend** — a comparison of the last seven days against the prior seven days, expressed as a named level from Doom 5 to Bloom 5.
+- **Story count** — the number of scored stories in the current filtered view.
+
+## Filtering
+
+Use the controls above the chart to narrow the data:
+
+<Steps>
+  <Step title="Filter by category">
+    Select Safety, Policy, Models, Industry, or Security to restrict the chart and table to stories from that category only.
+  </Step>
+  <Step title="Set a date range">
+    Drag the date range handles on the chart or use the time-range selector to zoom in on a specific period.
+  </Step>
+  <Step title="Filter by intensity">
+    Use the intensity filter to show only high-impact stories (intensity 2 or 3) and exclude background signal.
+  </Step>
+  <Step title="Search">
+    Type in the search box to filter the table by headline keyword.
+  </Step>
+</Steps>
+
+<Tip>
+  Click any bar on the diverging chart to open a sidebar showing all the stories that contributed to that day's score, with their full briefing text.
+</Tip>
+
+## Interpreting the tracker
+
+The tracker is a news-sentiment index, not a prediction model. A few things to keep in mind:
+
+<Accordion title="Why doesn't a bad week mean AI doom is inevitable?">
+  The tracker measures the directional tone of published news, which is subject to publication cycles, media attention, and the inherent difficulty of assessing complex events. A spike in doom points often reflects a cluster of related negative stories — a policy rollback, a capabilities announcement, a safety team departure — rather than a step-change in underlying risk.
+</Accordion>
+
+<Accordion title="How is sentiment decided?">
+  Each story's sentiment is assigned during the editorial production process according to a structured rulebook. The rules are category-specific: for example, a safety research paper that discovers and publishes a new vulnerability is rated positive (disclosure helps the field), while a lab removing safety guardrails for competitive reasons is rated negative. Sentiment is subject to editorial review and is periodically recalibrated.
+</Accordion>
+
+<Accordion title="Is the tracker in beta?">
+  Yes. The scoring system is in open beta. The calibration is being refined based on real-world data, and the methodology may change as the editorial team identifies systematic biases or edge cases.
+</Accordion>

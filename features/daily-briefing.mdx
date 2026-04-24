@@ -1,0 +1,72 @@
+---
+title: "The Daily Briefing: Your AI Safety Digest"
+description: "Read how the AISAFETY.FYI daily briefing works — leads, ticker, spotlight, filtering, keyboard navigation, date browsing, and mobile swipe."
+sidebarTitle: "Daily Briefing"
+---
+
+Every morning, AISAFETY.FYI publishes a structured briefing drawn from more than 100 sources across AI safety research, policy, industry, and security. Rather than presenting an undifferentiated feed, the briefing is ranked and formatted so you can absorb the most important developments in a few minutes — and dig deeper only when something warrants it.
+
+## Briefing structure
+
+Each daily briefing is divided into three sections.
+
+<CardGroup cols={3}>
+  <Card title="Leads" icon="newspaper">
+    Up to three stories with full editorial briefings of up to 500 characters each. These are the highest-significance developments of the day, ranked by intensity (their directional impact on AI safety) and then by composite score.
+  </Card>
+  <Card title="Ticker" icon="list">
+    A compact list of remaining stories — each with a single one-liner of up to 130 characters. Ticker items cover a wider range of relevance, from important secondary stories to background signal.
+  </Card>
+  <Card title="Spotlight" icon="star">
+    An occasional non-text pick: a notable podcast episode, video, interactive demo, or cultural moment in AI. When present, it sits at the foot of the briefing.
+  </Card>
+</CardGroup>
+
+## Navigating by date
+
+The home page always shows the most recent published briefing. To browse past editions, you have two options:
+
+<Steps>
+  <Step title="Use the date picker">
+    Click the date in the page header to open the date navigation picker. Select any past date that has a published briefing.
+  </Step>
+  <Step title="Use the URL directly">
+    Navigate to any past edition by entering a date in the URL: `aisafety.fyi/YYYY-MM-DD`. For example, `aisafety.fyi/2026-03-14` loads the 14 March 2026 briefing.
+  </Step>
+</Steps>
+
+<Tip>
+  Date navigation uses `history.pushState` rather than a full page reload, so switching between dates is fast and your scroll position is preserved.
+</Tip>
+
+## Filtering by category
+
+Use the filter bar to narrow the briefing to a single editorial category: Safety, Policy, Models, Industry, or Security. Selecting a category hides all stories that were not assigned to it — both in leads and in the ticker. The active filter persists as you navigate between dates.
+
+You can also browse a single category as a dedicated view via the URL `/category/[slug]` — for example, `/category/safety` or `/category/policy`.
+
+## Keyboard navigation
+
+The briefing is designed to be navigable without a mouse.
+
+| Key | Action |
+|-----|--------|
+| `↓` or `j` | Move to the next story |
+| `↑` or `k` | Move to the previous story |
+| `⌘K` | Open the search modal |
+
+<Note>
+  Keyboard navigation moves focus between stories in reading order. Press `Enter` on a focused story to open the source article.
+</Note>
+
+## Search
+
+Press `⌘K` (or `Ctrl+K` on Windows/Linux) to open the search modal. Search matches against story titles, one-liners, and briefing text across recent dossiers.
+
+## Theme
+
+Use the theme toggle in the site header to switch between light mode, dark mode, and system-default. Your choice is saved across visits.
+
+## Mobile
+
+On mobile, the briefing renders as a horizontally swipeable carousel — each section (leads, ticker, spotlight) occupies its own card. Swipe left or right to move between them. The date picker is accessible from the top of the screen, and category filtering works the same as on desktop.

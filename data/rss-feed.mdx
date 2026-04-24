@@ -1,0 +1,73 @@
+---
+title: "Subscribe to the daily briefing via RSS"
+description: "Get every AISAFETY.FYI briefing in your feed reader the moment it publishes. The RSS feed delivers the 30 most recent dossiers in standard RSS 2.0 format."
+sidebarTitle: "RSS Feed"
+---
+
+The fastest way to stay current with the daily briefing is to subscribe in a feed reader. AISAFETY.FYI publishes a standard RSS 2.0 feed that works with any client — from desktop apps like NetNewsWire and Reeder to web-based readers like Feedly, Inoreader, and NewsBlur.
+
+<Note>
+  The briefing publishes once per day at approximately 8:10 AM Berlin time (CET/CEST). Your feed reader will pick it up within the hour, depending on its poll interval.
+</Note>
+
+## Feed endpoints
+
+<CodeGroup>
+
+```text RSS
+https://aisafety.fyi/rss
+```
+
+```text JSON Feed
+https://aisafety.fyi/feed.json
+```
+
+</CodeGroup>
+
+Both endpoints return the same 30 most recent dossiers. Use whichever format your reader prefers — most modern readers accept both. The RSS feed uses the `application/rss+xml` content type; the JSON Feed uses `application/json`.
+
+## What each item contains
+
+Every item in the feed corresponds to one day's briefing. When you open an entry in your reader you'll see:
+
+- **The day's headline** — a short title that captures the dominant story
+- **Executive summary** — 2–3 sentences covering the top stories, with inline links to the source articles
+- **Lead stories** — the 2–3 most significant stories of the day, each with a source name and one-liner summary
+- **All stories** — the full ticker of ranked items covered that day, with links to the original articles
+
+Clicking the item title takes you to the canonical briefing page at `https://aisafety.fyi/YYYY-MM-DD`, where you can read full briefings, filter by category, and navigate between dates.
+
+## Adding to your feed reader
+
+<Steps>
+  <Step title="Copy the feed URL">
+    Copy `https://aisafety.fyi/rss` (or `https://aisafety.fyi/feed.json` for JSON Feed).
+  </Step>
+  <Step title="Open your feed reader">
+    In most readers, look for an **Add Feed**, **Subscribe**, or **+** button.
+  </Step>
+  <Step title="Paste and subscribe">
+    Paste the URL and confirm. The reader will fetch the feed and populate your inbox with recent briefings immediately.
+  </Step>
+</Steps>
+
+<Tip>
+  If your reader supports folders or labels, filing this feed under an "AI Safety" or "Daily" group helps it stand out from lower-frequency sources.
+</Tip>
+
+## Popular readers
+
+<CardGroup cols={2}>
+  <Card title="Feedly" icon="rss">
+    Paste the RSS URL into Feedly's search bar. Works with both the free and Pro tiers.
+  </Card>
+  <Card title="Inoreader" icon="rss">
+    Use **Add Content → RSS/Atom Feed** and paste the URL directly.
+  </Card>
+  <Card title="NetNewsWire (Mac/iOS)" icon="rss">
+    Choose **File → New Feed** and paste the URL. Free and open source.
+  </Card>
+  <Card title="Reeder (Mac/iOS)" icon="rss">
+    Add a new account or feed and paste the URL. Supports RSS and JSON Feed natively.
+  </Card>
+</CardGroup>

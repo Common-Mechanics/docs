@@ -1,0 +1,116 @@
+---
+title: "Configuring your RSS source feeds"
+description: "sources.yaml defines every RSS feed the pipeline monitors. Learn how to add, remove, and weight sources to match your publication's topic."
+sidebarTitle: "Sources"
+---
+
+`sources.yaml` is the feed configuration file — it lists every RSS source the pipeline fetches during the daily build. The pipeline reads this file at runtime, fetches all feeds within a 28-hour window (overlapping with the previous day to catch late-breaking stories), and passes the results to the triage phase for relevance filtering. Replacing the default AI safety sources with feeds from your domain is one of the first things you'll do when setting up a new publication.
+
+## Source entry format
+
+Each entry in `sources.yaml` requires a `name`, `url`, and `type`. Tags and priority are optional but important for scoring.
+
+<CodeGroup>
+
+```yaml Minimal entry
+sources:
+  - name: "Publication Name"
+    url: "https://example.com/feed.xml"
+    type: rss
+    tags: [your-topic, governance]
+```
+
+```yaml Entry with priority
+sources:
+  - name: "High-priority source"
+    url: "https://topthinktank.org/feed"
+    type: rss
+    tags: [research, policy]
+    priority: 4
+```
+
+```yaml Real example from sources.yaml
+sources:
+  - name: "Alignment Forum"
+    url: "https://www.alignmentforum.org/feed.xml"
+    type: rss
+    tags: [ai-safety, alignment]
+
+  - name: "ARC (Alignment Research Center)"
+    url: "https://www.alignment.org/blog/feed/"
+    type: rss
+    tags: [ai-safety, alignment, research]
+
+  - name: "Transformer Circuits"
+    # Original RSS blocked (403) — via Google News proxy
+    url: "https://news.google.com/rss/search?q=site:transformer-circuits.pub&hl=en-US&gl=US&ceid=US:en"
+    type: rss
+    tags: [ai-safety, interpretability, research]
+```
+
+</CodeGroup>
+
+## Field reference
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | Yes | Display name for the source. Shown on the About page source list and used in pipeline logging. |
+| `url` | Yes | Full URL to the RSS feed. Must be a valid RSS or Atom feed. |
+| `type` | Yes | Always `rss` for standard feeds. |
+| `tags` | No | One or more tags from your taxonomy. Used to pre-classify incoming items before the AI triage phase. |
+| `priority` | No | Integer from 2 to 5. Feeds into the composite scoring formula. Omitting it assigns the source to the default weight tier. |
+
+## Priority weights and composite scoring
+
+The `priority` field controls how much weight a source's stories receive in the composite scoring formula:
+
+```
+composite_score = (topic_importance × 0.4) + (article_importance × 0.6)
+```
+
+Topic importance is influenced by the source's priority tier. Higher-priority sources produce stories with a higher topic importance ceiling, which means they compete more strongly for lead positions. Use priority to reflect the editorial standing of a source in your domain:
+
+| Priority | Use for |
+|----------|---------|
+| `5` | The most authoritative primary sources in your field — landmark institutions, seminal publications |
+| `4` | Major publications and well-regarded specialist outlets |
+| `3` | Good secondary sources, active newsletters, strong independent voices |
+| `2` | Supplementary sources, general media, high-volume feeds that need filtering |
+
+<Tip>
+  Reserve priority 5 for a small number of truly authoritative sources. If everything is high priority, nothing is. The default (no priority field) is equivalent to priority 2.
+</Tip>
+
+## Curating sources for your domain
+
+When you fork the repository, `sources.yaml` contains 114 AI safety feeds. For a different domain, you'll replace most or all of these. A few principles to guide curation:
+
+**Prefer primary sources over aggregators.** Individual research lab blogs, think tank publications, and subject-matter newsletters generate more signal than news aggregators, which often republish the same story from multiple outlets.
+
+**Include a range of publication types.** The pipeline's editorial team is structured to surface research, policy, industry, and media coverage in parallel. Feeds that mix these types work well; overly narrow source lists create gaps in one category.
+
+**Flag high-volume sources for filtering.** Sources that publish hundreds of items per day (arXiv, major newspapers, podcast networks) benefit from keyword filtering in `config/tenant.yaml` under `arxiv_keywords` or `general_media`. Without filtering, high-volume sources can flood the triage phase with irrelevant items.
+
+**Add a note for unusual feed paths.** If you're using a Google News proxy or an unofficial feed path, add a YAML comment explaining why so future maintainers don't remove it:
+
+```yaml
+- name: "Journal Without Standard RSS"
+  # No native RSS — using Google News proxy
+  url: "https://news.google.com/rss/search?q=site:example.com&hl=en-US&gl=US&ceid=US:en"
+  type: rss
+  tags: [your-topic]
+```
+
+## Validation
+
+After editing `sources.yaml`, run the validation script to catch malformed entries, duplicate URLs, and other issues before your next build:
+
+```bash
+node scripts/validate-tenant-config.js
+```
+
+The validator runs 41 checks covering both `tenant.yaml` and `sources.yaml`. Fix any errors it reports before pushing — a malformed source entry will cause the pipeline to skip that feed silently, which is harder to debug after the fact.
+
+<Note>
+  The source list shown on your `/about` page is auto-generated from `sources.yaml` by the sync script. Run `node scripts/sync-tenant-config.js` after editing sources to update the frontend source list. Do not edit `web/src/config/sources.ts` directly — it is overwritten on every sync.
+</Note>

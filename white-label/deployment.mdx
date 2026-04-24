@@ -1,0 +1,134 @@
+---
+title: "Deploying your briefing to production"
+description: "Set up GitHub Pages for the daily data pipeline and Cloudflare Workers for the Next.js web app. Covers secrets, workflows, and manual triggers."
+sidebarTitle: "Deployment"
+---
+
+The platform has two deployment targets that serve different purposes. GitHub Pages hosts the static JSON data files that the pipeline produces each day — this is the minimum you need for a working briefing. Cloudflare Workers hosts the full interactive Next.js web app, including the tracker chart, event timeline, and context graph. You can start with GitHub Pages only and add Cloudflare later.
+
+<Tabs>
+  <Tab title="GitHub Pages (pipeline output)">
+    GitHub Pages serves the pipeline's daily JSON output: the structured dossier data that the web app reads to render your briefing. Every successful pipeline run commits the output to your repository and triggers a GitHub Pages deploy automatically.
+
+    <Steps>
+      <Step title="Enable GitHub Pages">
+        In your repository, go to **Settings → Pages**. Under **Source**, select **GitHub Actions**. This tells GitHub to serve from the output of the Pages deploy workflow rather than a branch.
+
+        You do not need to configure a custom domain at this step — the default `https://YOUR-ORG.github.io/YOUR-REPO` URL works as your `data_base_url` during setup.
+      </Step>
+
+      <Step title="Add API key secrets">
+        Go to **Settings → Secrets and variables → Actions** and add:
+
+        | Secret | Required |
+        |--------|----------|
+        | `ANTHROPIC_API_KEY` | Yes |
+        | `OPENAI_API_KEY` | Recommended |
+
+        The daily pipeline workflow (`.github/workflows/dossier.yml`) reads these secrets automatically. Without `ANTHROPIC_API_KEY`, the pipeline will fail immediately.
+      </Step>
+
+      <Step title="Trigger the first build">
+        Go to **Actions → Daily AI Dossier → Run workflow**. Leave all inputs at their defaults and click **Run workflow**.
+
+        The build takes 10–20 minutes. Watch the workflow logs to confirm each phase completes. When it finishes, your briefing data is live at `https://YOUR-ORG.github.io/YOUR-REPO/data/`.
+      </Step>
+
+      <Step title="Confirm the daily cron">
+        After your first successful manual run, the daily cron takes over automatically. The pipeline runs at 8:10 AM Berlin time every day (the workflow uses a DST-proof dual-cron schedule to stay accurate year-round).
+
+        If a build fails, the workflow retries automatically up to three times before giving up. Transient API errors (529 overloaded, 500 server errors) trigger exponential backoff retries within a single run.
+      </Step>
+    </Steps>
+
+    ### Manual dispatch inputs
+
+    When you trigger the workflow manually from **Actions → Daily AI Dossier → Run workflow**, three optional inputs are available:
+
+    | Input | Description |
+    |-------|-------------|
+    | `date` | Build for a specific past date, e.g. `2026-03-15`. Omit to build for today. |
+    | `cutoff_hours` | Extend the RSS lookback window (default is 28 hours). |
+    | `resume` | Resume a failed build from its last checkpoint. Pass the build ID from the failed run's logs. |
+  </Tab>
+
+  <Tab title="Cloudflare Workers (web app)">
+    Cloudflare Workers hosts the full Next.js web app via the `@opennextjs/cloudflare` adapter. This gives you the interactive tracker chart, event timeline, context graph, and all dynamic routes. The app deploys automatically on every push to `main` that passes the test suite.
+
+    <Steps>
+      <Step title="Create a Cloudflare account and get your credentials">
+        Sign in at [cloudflare.com](https://cloudflare.com) and create a Workers account if you don't already have one.
+
+        You need two values:
+        - **Account ID** — found in the Cloudflare dashboard sidebar under your account name.
+        - **API Token** — go to **My Profile → API Tokens → Create Token**. Use the **Edit Cloudflare Workers** template, which grants the `Workers Scripts:Edit` permission needed for deployment.
+      </Step>
+
+      <Step title="Add Cloudflare secrets to GitHub">
+        In your repository, go to **Settings → Secrets and variables → Actions** and add:
+
+        | Secret | Value |
+        |--------|-------|
+        | `CLOUDFLARE_API_TOKEN` | The API token you just created |
+        | `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID |
+        | `NEXT_PUBLIC_SENTRY_DSN` | Optional — Sentry DSN for error tracking |
+
+        <Warning>
+          Keep `CLOUDFLARE_ACCOUNT_ID` stored as a secret, not a variable. While it's not a credential, treating it as a secret is simpler and avoids any risk of exposing your account structure.
+        </Warning>
+      </Step>
+
+      <Step title="Configure wrangler.jsonc">
+        Open `web/wrangler.jsonc` and update the `name` field to match your Worker's desired name. This is the identifier Cloudflare uses for your deployment — it does not need to match your publication name exactly, but something descriptive is helpful:
+
+        ```jsonc
+        {
+          "name": "your-publication-worker",
+          // ... rest of config
+        }
+        ```
+      </Step>
+
+      <Step title="Push to main to trigger deployment">
+        The ship workflow (`.github/workflows/ship.yml`) runs on every push to `main`. It runs typecheck, lint, and unit tests first, then deploys to Cloudflare Workers if all checks pass.
+
+        Push a commit to `main` to trigger the first deploy:
+
+        ```bash
+        git add .
+        git commit -m "chore: initial Cloudflare deployment setup"
+        git push
+        ```
+
+        Watch **Actions → Ship** to see the test and deploy jobs progress. A successful run will print the deployed Worker URL in the deploy job logs.
+      </Step>
+
+      <Step title="Set a custom domain (optional)">
+        In the Cloudflare dashboard, go to **Workers & Pages → your worker → Settings → Triggers → Custom Domains** and add your domain. Update `site.url` in `config/tenant.yaml` to match, run `node scripts/sync-tenant-config.js`, and push.
+      </Step>
+    </Steps>
+
+    ### Skipping the Cloudflare deploy
+
+    Include `[skip deploy]` anywhere in your commit message to run tests without triggering a Cloudflare deployment. Use this for documentation-only changes, WIP commits, and anything that doesn't affect the user-facing web app:
+
+    ```bash
+    git commit -m "docs: update README [skip deploy]"
+    ```
+
+    Do not use `[skip deploy]` on the final commit of a series — only use it on intermediate commits you know will be superseded.
+  </Tab>
+</Tabs>
+
+## Build resilience
+
+The pipeline has several layers of protection against transient failures:
+
+- **Checkpoint resume** — if a build fails after a time-consuming phase, you can resume it from the last successful checkpoint using the `--resume=BUILD_ID` flag rather than restarting from scratch.
+- **Artifact backup** — pipeline output is uploaded as a GitHub Actions artifact immediately after the pipeline succeeds, before the git push. If the push fails, re-triggering the workflow recovers from the artifact automatically.
+- **Deputy Chief Editor** — if the Opus model is unavailable (429/529), a Sonnet-powered Deputy steps in with the same editorial mandate. Decisions marked `_deputy: true` in the output indicate the fallback was used.
+- **Quality gate retry** — if the output doesn't meet the minimum lead/ticker count threshold, the pipeline attempts a targeted Produce retry before triggering a full restart.
+
+<Info>
+  The pipeline enforces a default cost cap of $5 per build. If cumulative API costs exceed this during a single run, the pipeline aborts and saves its checkpoint. You can adjust this with the `--max-cost` flag when triggering manually.
+</Info>

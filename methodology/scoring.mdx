@@ -1,0 +1,90 @@
+---
+title: "How Stories Are Scored and Ranked"
+description: "aisafety.fyi uses a two-axis scoring system: an editorial score for placement and a safety signal strength for the P(Doom) Tracker. Here is how both work."
+sidebarTitle: "Scoring"
+---
+
+Every story in the daily briefing carries two independent scores. One determines where the story appears — whether it becomes a lead or a ticker item, and in what order. The other measures how much the story moves the AI safety signal that powers the P(Doom) Tracker. Understanding how these scores work helps you read the briefing more fluently.
+
+<Note>
+  All scores are assigned by the AI editorial pipeline and reflect editorial judgment about AI safety impact. They are calibrated defaults, not mathematical certainties — the pipeline can deviate from its own rules when a specific story warrants it, and records its reasoning when it does.
+</Note>
+
+## The Composite Score
+
+The composite score runs from 1 to 10 and answers one question: *How editorially important and relevant is this story?*
+
+It is calculated from two components:
+
+- **Source priority weight** (40%) — how significant is the source that published this story? Sources are assigned priority weights based on their track record, domain expertise, and proximity to primary information.
+- **Article importance** (60%) — how important is this specific piece of reporting? First-mover scoops on paradigm shifts score highest; commentary restating known facts scores lowest.
+
+```
+Composite Score = (Source Priority × 0.4) + (Article Importance × 0.6)
+```
+
+The composite score determines editorial placement: leads must score above 6.5, and ticker items must score above 4.0. If a story was considered for a lead but is demoted — because of the novelty cap or the three-lead maximum — its score is preserved. A demoted story that scored 7.8 stays at 7.8 in the ticker; the demotion reflects placement rules, not a reassessment of the article's quality.
+
+## Signal Strength (Intensity)
+
+Signal strength — labeled as **intensity** in the data — measures how much a story moves the AI safety landscape. It feeds directly into the P(Doom) Tracker and is the primary sort key for ordering stories within the briefing.
+
+| Level | Label | What it means |
+|-------|-------|---------------|
+| 0 | Negligible | No safety dimension. Pure capability announcement, personnel move, or business news with no safety signal. |
+| 1 | Minor | Noteworthy, but does not change any reader's threat model. Illustrates a known concern, reports a corporate misbehavior, or covers a routine policy update. |
+| 2 | Significant | A reader's assessment of AI safety should be concretely different after reading this. Requires a concrete change: a policy enacted, a vulnerability discovered, an empirical result that challenges an existing safety assumption. |
+| 3 | Critical | A paradigm shift. Everything is different now. Reserved for events like an international AI treaty, a confirmed existential-risk event, or a frontier lab shutdown. Maximum one per dossier, always a lead. |
+
+### The Safety-Relevance Gate
+
+Before a story can reach intensity 2 or 3, it must clear a gate: *"What specifically changed about the AI safety landscape because of this story?"*
+
+If the honest answer is "it illustrates a known concern," "it's a bad look for a company," or "this viral incident confirms something we already knew," the story is capped at intensity 1. Intensity 2 requires a concrete, new development — not amplification of existing anxiety.
+
+## Priority Labels
+
+Each story also carries a priority label — **critical**, **high**, **medium**, or **low** — derived from the composite score. These labels appear in the briefing UI as a quick-read indicator of editorial weight.
+
+## Story Ordering
+
+Within the briefing, stories are sorted by intensity descending first, with the composite score as a tiebreaker:
+
+```
+Lead 1:   intensity 3, score 8.8   ← highest safety signal first
+Lead 2:   intensity 2, score 8.4
+Lead 3:   intensity 2, score 8.0   ← same intensity, lower score is second
+Ticker 1: intensity 2, score 7.6
+...
+```
+
+This ordering means the stories with the greatest impact on the AI safety trajectory always appear first, regardless of how newsworthy they might seem on raw editorial merit alone.
+
+## Novelty Caps
+
+A story's novelty class — assigned during [the editorial pipeline](/methodology/editorial-process) — places a ceiling on both its composite score and its intensity. This prevents dramatic headlines on low-novelty stories from inflating the briefing's signal.
+
+| Novelty class | What it means | Max composite score | Max intensity |
+|---------------|---------------|--------------------:|:-------------:|
+| Breaking — empirical | First-mover research result or data | 9.5 | 3 |
+| Breaking — policy | First-mover regulatory or governance development | 9.5 | 3 |
+| Breaking — deployment | First-mover product launch or deployment | 8.5 | 2 |
+| Breaking — organizational | First-mover leadership, M&A, or structural news | 8.0 | 2 |
+| Continuation — escalation | Follow-up that escalates or materially develops a known story | 8.0 | 2 |
+| Continuation — resolution | Follow-up that resolves or concludes a known story | 8.0 | 2 |
+| Continuation — maintenance | Routine follow-up with no material change | 6.5 | 1 |
+| Commentary — analytical | Interpretation that synthesizes into genuinely new insight | 7.5 | 2 |
+| Commentary — speculative | Prediction or opinion without new supporting evidence | 7.0 | 1 |
+| Commentary — factual | Restatement of known facts with no new analysis | 6.0 | 0 |
+
+These ceilings are applied mechanically after drafting. If the pipeline assigns a score that exceeds a story's ceiling, it is clamped automatically — the editorial score reflects the story's intrinsic quality, and the cap prevents novelty-class inflation.
+
+## The arXiv Rules
+
+Raw arXiv preprints — papers posted before peer review or independent coverage — face three additional constraints:
+
+- They cannot appear as lead stories under any circumstances
+- A maximum of three arXiv papers can appear in any single ticker
+- Their intensity is capped at 2, regardless of the paper's content
+
+These rules exist because preprints, while often significant, have not yet been vetted or contextualized by independent reporting. A paper that is later covered by independent outlets can earn full scoring at that point.
